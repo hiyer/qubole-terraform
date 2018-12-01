@@ -1,4 +1,4 @@
-# Private Subnet Configuration
+# Public Subnet Configuration
 
 This template creates a VPC for use with Qubole clusters in a public subnet based on the [VPC Scenario 1](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario1.html).
 

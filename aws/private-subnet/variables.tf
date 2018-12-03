@@ -20,7 +20,8 @@ variable "tags" {
   default = {}
 }
 
-
+# public key to use for bastion node. This is the
+# "account key" in cluster UI
 variable "ssh_public_key" {
   
 }

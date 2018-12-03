@@ -23,6 +23,14 @@ resource "azurerm_virtual_network" "network" {
   }
 }
 
+resource "azurerm_subnet" "subnet" {
+  name           = "${var.prefix}-subnet1"
+  address_prefix = "${var.subnet_cidr}"
+  resource_group_name = "${azurerm_resource_group.network.name}"
+  virtual_network_name = "${azurerm_virtual_network.network.name}"
+}
+
+
 # Create a storage account
 resource "azurerm_storage_account" "storage" {
   name = "${var.prefix}storage"

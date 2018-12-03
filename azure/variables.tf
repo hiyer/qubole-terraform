@@ -22,7 +22,7 @@ variable "subnet_cidr" {
 }
 
 output "vnet_name" {
-  value = "azurerm_virtual_network.network.name"
+  value = "${azurerm_virtual_network.network.name}"
 }
 
 output "vnet_id" {

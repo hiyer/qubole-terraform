@@ -25,10 +25,10 @@ variable "public_subnet_cidr" {
   default = "10.0.0.0/24"
 }
 
-# Public IP to whitelist SSH traffic from
-# (either NAT or tunnel server)
+# Public IPs to whitelist SSH traffic from
+# (either NAT or tunnel servers)
 variable "whitelist_ip" {
-  
+  type = "list"
 }
 
 output "vpc_id" {

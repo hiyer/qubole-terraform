@@ -24,83 +24,97 @@ resource "aws_vpc_endpoint" "s3" {
 resource "aws_network_acl" "public_subnet" {
   vpc_id = "${aws_vpc.default.id}"
   subnet_ids = ["${aws_subnet.public_subnet.id}"]
-   
-   # Allow response to SSH from Qubole NAT
-   egress {
-    protocol   = "tcp"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = "${var.whitelist_ip}"
-    from_port  = 32768
-    to_port    = 65535
-  }
-  
-  # Allow all traffic from within VPC
-  egress {
-    protocol   = "tcp"
-    rule_no    = 200
-    action     = "allow"
-    cidr_block = "${var.cidr_block}"
-    from_port  = 0
-    to_port    = 65535
-  }
-
-  # Allow HTTP
-  egress {
-    protocol   = "tcp"
-    rule_no    = 300
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 80
-    to_port    = 80
-  }
-
-  # HTTPS
-  egress {
-    protocol   = "tcp"
-    rule_no    = 400
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 443
-    to_port    = 443
-  }
-  
-  # Allow SSH from Qubole NAT
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = "${var.whitelist_ip}"
-    from_port  = 22
-    to_port    = 22
-  }
-
-  # Allow inbound return traffic for hosts
-  # on internet for traffic originating in
-  # private subnet
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 200
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 1024
-    to_port    = 65535
-  }
-  
-  # Allow all traffic from within VPC
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 300
-    action     = "allow"
-    cidr_block = "${var.cidr_block}"
-    from_port  = 0
-    to_port    = 65535
-  }
 
   tags = "${merge(
             map("name", "${var.prefix}-public-subnet-acl"),
             "${var.tags}"
           )}"
+}
+
+# SSH from Qubole
+resource "aws_network_acl_rule" "ssh_in" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = false
+  count = "${length(var.whitelist_ip)}" 
+  protocol   = "tcp"
+  rule_number    = 100
+  rule_action     = "allow"
+  cidr_block = "${element(var.whitelist_ip, count.index)}"
+  from_port  = 22
+  to_port    = 22
+}
+
+# Response to SSH
+resource "aws_network_acl_rule" "ssh_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  protocol   = "tcp"
+  rule_number   = 100
+  rule_action  = "allow"
+  count = "${length(var.whitelist_ip)}" 
+  cidr_block = "${element(var.whitelist_ip, count.index)}"
+  from_port  = 32768
+  to_port    = 65535
+  egress = true
+}
+
+# Outgoing traffic within VPC
+resource "aws_network_acl_rule" "vpc_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  protocol   = "tcp"
+  rule_number   = 200
+  rule_action  = "allow"
+  cidr_block = "${var.cidr_block}"
+  from_port  = 0
+  to_port    = 65535
+  egress = true
+}
+
+# Incoming traffic within VPC
+resource "aws_network_acl_rule" "vpc_in" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  protocol   = "tcp"
+  rule_number   = 200
+  rule_action  = "allow"
+  cidr_block = "${var.cidr_block}"
+  from_port  = 0
+  to_port    = 65535
+  egress = false
+}
+
+# HTTP egress
+resource "aws_network_acl_rule" "http_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = true
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 300
+  cidr_block   = "0.0.0.0/0"
+  from_port    = 80
+  to_port      = 80
+}
+
+# HTTPS egress
+resource "aws_network_acl_rule" "https_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = true
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 400
+  cidr_block   = "0.0.0.0/0"
+  from_port    = 443
+  to_port      = 443
+}
+
+# HTTP(s) response
+resource "aws_network_acl_rule" "https_in" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = false
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 300
+  cidr_block   = "0.0.0.0/0"
+  from_port    = 1024
+  to_port      = 65535
 }
 
 # Internet gateway for the public subnet 
@@ -163,6 +177,23 @@ resource "aws_nat_gateway" "nat_gateway" {
           )}"
 }
 
+data "aws_ami" "amzn_linux" {
+  most_recent = true
+  filter {
+    name = "name"
+    values = ["amzn-ami-hvm-*-x86_64-gp2"]
+  }
+  filter {
+    name = "virtualization-type"
+    values = ["hvm"]
+  }
+  filter {
+    name = "is-public"
+    values = ["true"]
+  }
+  owners = ["amazon"]
+}
+
 # Security group for the Bastion node
 resource "aws_security_group" "bastion_sg" {
     name = "bastion_sg"
@@ -200,8 +231,9 @@ resource "aws_security_group" "bastion_sg" {
           )}"
 }
 
+# Bastion Instance
 resource "aws_instance" "bastion_instance" {
-    ami = "ami-0d441475"
+    ami = "${data.aws_ami.amzn_linux.id}"
     instance_type = "t2.small"
     key_name = "${var.aws_key_name}"
     vpc_security_group_ids = ["${aws_security_group.bastion_sg.id}"]
@@ -216,6 +248,14 @@ resource "aws_instance" "bastion_instance" {
                 #!/bin/bash
                 echo ${var.ssh_public_key} >> /home/ec2-user/.ssh/authorized_keys
                 echo ${var.ssh_public_key} >> /home/root/.ssh/authorized_keys
+                if grep -q "^GatewayPorts no" /etc/ssh/sshd_config; then
+                  sed -i 's/GatewayPorts no/GatewayPorts yes/' /etc/ssh/sshd_config
+                elif grep -q "^GatewayPorts yes" /etc/ssh/sshd_config; then
+                  echo "GatewayPorts already enabled."
+                else
+                  echo "GatewayPorts yes >> /etc/ssh/sshd_config"
+                fi
+                systemctl restart ssh || /etc/init.d/sshd restart
                 EOF
 
     tags = "${merge(

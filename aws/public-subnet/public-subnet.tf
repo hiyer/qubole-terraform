@@ -25,61 +25,72 @@ resource "aws_network_acl" "public_subnet" {
   vpc_id = "${aws_vpc.default.id}"
   subnet_ids = ["${aws_subnet.public_subnet.id}"]
    
-   # Allow response to SSH from Qubole NAT
-   egress {
-    protocol   = "tcp"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = "${var.whitelist_ip}"
-    from_port  = 32768
-    to_port    = 65535
-  }
-
-  # Allow HTTP
-  egress {
-    protocol   = "tcp"
-    rule_no    = 300
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 80
-    to_port    = 80
-  }
-
-  # HTTPS
-  egress {
-    protocol   = "tcp"
-    rule_no    = 400
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 443
-    to_port    = 443
-  }
-  
-  # Allow SSH from Qubole NAT
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = "${var.whitelist_ip}"
-    from_port  = 22
-    to_port    = 22
-  }
-
-  # Allow inbound return traffic for hosts
-  # on internet for traffic from this subnet
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 200
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 1024
-    to_port    = 65535
-  }
-  
   tags = "${merge(
             map("name", "${var.prefix}-public-subnet-acl"),
             "${var.tags}"
           )}"
+}
+
+# SSH response egress
+resource "aws_network_acl_rule" "ssh_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = true
+  count = "${length(var.whitelist_ip)}" 
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 100
+  cidr_block   = "${element(var.whitelist_ip, count.index)}"
+  from_port    = 32768
+  to_port      = 65535
+}
+
+# SSH ingress
+resource "aws_network_acl_rule" "ssh_in" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = false
+  count = "${length(var.whitelist_ip)}" 
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 100
+  cidr_block   = "${element(var.whitelist_ip, count.index)}"
+  from_port    = 22
+  to_port      = 22
+}
+
+# HTTP egress
+resource "aws_network_acl_rule" "http_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = true
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 200
+  cidr_block   = "0.0.0.0/0"
+  from_port    = 80
+  to_port      = 80
+}
+
+# HTTPS egress
+resource "aws_network_acl_rule" "https_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = true
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 300
+  cidr_block   = "0.0.0.0/0"
+  from_port    = 443
+  to_port      = 443
+}
+
+# HTTP(s) response
+resource "aws_network_acl_rule" "https_in" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  egress = false
+  protocol     = "tcp"
+  rule_action = "allow"
+  rule_number  = 200
+  cidr_block   = "0.0.0.0/0"
+  from_port    = 1024
+  to_port      = 65535
 }
 
 # Internet gateway for the public subnet 

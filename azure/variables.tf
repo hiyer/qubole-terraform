@@ -50,6 +50,6 @@ output "storage_container" {
 }
 
 output "defloc_prefix" {
-  value = "${azurerm_storage_container.container.name}@${azurerm_storage_account.storage.name}.blob.core.windows.net/azurevnext"
+  value = "${azurerm_storage_container.container.name}@${azurerm_storage_account.storage.name}.blob.core.windows.net"
 }
 

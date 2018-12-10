@@ -18,7 +18,7 @@ resource "aws_network_acl_rule" "ssh_in" {
   egress = false
   count = "${length(var.whitelist_ip)}" 
   protocol   = "tcp"
-  rule_number    = 100
+  rule_number    = 101
   rule_action     = "allow"
   cidr_block = "${element(var.whitelist_ip, count.index)}"
   from_port  = 22
@@ -29,7 +29,7 @@ resource "aws_network_acl_rule" "ssh_in" {
 resource "aws_network_acl_rule" "ssh_out" {
   network_acl_id = "${aws_network_acl.public_subnet.id}"
   protocol   = "tcp"
-  rule_number   = 100
+  rule_number   = 101
   rule_action  = "allow"
   count = "${length(var.whitelist_ip)}" 
   cidr_block = "${element(var.whitelist_ip, count.index)}"
@@ -38,11 +38,35 @@ resource "aws_network_acl_rule" "ssh_out" {
   egress = true
 }
 
+# HTTPS out
+resource "aws_network_acl_rule" "https_out" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  protocol   = "tcp"
+  rule_number   = 201
+  rule_action  = "allow"
+  cidr_block = "0.0.0.0/0"
+  from_port  = 443
+  to_port    = 443
+  egress = true
+}
+
+# HTTPS response
+resource "aws_network_acl_rule" "https_in" {
+  network_acl_id = "${aws_network_acl.public_subnet.id}"
+  protocol   = "tcp"
+  rule_number   = 201
+  rule_action  = "allow"
+  cidr_block = "0.0.0.0/0"
+  from_port  = 32768
+  to_port    = 65535
+  egress = false
+}
+
 # Outgoing traffic within VPC
 resource "aws_network_acl_rule" "vpc_out" {
   network_acl_id = "${aws_network_acl.public_subnet.id}"
   protocol   = "tcp"
-  rule_number   = 200
+  rule_number   = 301
   rule_action  = "allow"
   cidr_block = "${data.aws_vpc.default.cidr_block}"
   from_port  = 0
@@ -54,7 +78,7 @@ resource "aws_network_acl_rule" "vpc_out" {
 resource "aws_network_acl_rule" "vpc_in" {
   network_acl_id = "${aws_network_acl.public_subnet.id}"
   protocol   = "tcp"
-  rule_number   = 200
+  rule_number   = 301
   rule_action  = "allow"
   cidr_block = "${data.aws_vpc.default.cidr_block}"
   from_port  = 0

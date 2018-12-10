@@ -77,7 +77,7 @@ resource "aws_eip" "nat_gateway" {
 
 # Route table entry for NAT gateway
 resource "aws_route" "nat_gateway" {
-  route_table_id = "${module.private_subnet.subnet_id}"
+  route_table_id = "${module.private_subnet.route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id = "${aws_nat_gateway.nat_gateway.id}"
 }

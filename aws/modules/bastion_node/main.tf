@@ -40,9 +40,9 @@ resource "aws_security_group" "bastion_node" {
         cidr_blocks = ["${var.private_subnet_cidr}"]
     }
     
-    # Allow outgoing traffic to private subnet
+    # Allow all outgoing traffic to private subnet
     egress {
-      from_port = 32768
+      from_port = 0
       to_port = 65535
       protocol = "tcp"
       cidr_blocks = ["${var.private_subnet_cidr}"]

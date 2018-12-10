@@ -47,9 +47,14 @@ variable "whitelist_ip" {
   type = "list"
 }
 
+# Public IPs of Qubole to whitelist
+# HTTPS traffic to/from
+variable "whitelist_outgoing" {
+  default = ""
+}
 
 output "bastion_ip" {
-  value = "${aws_eip.bastion.public_ip}"
+  value = "${module.bastion_node.public_ip}"
 }
 
 output "vpc_id" {
@@ -57,11 +62,11 @@ output "vpc_id" {
 }
 
 output "private_subnet_id" {
-  value = "${aws_subnet.private_subnet.id}"
+  value = "${module.private_subnet.subnet_id}"
 }
 
 output "public_subnet_id" {
-  value = "${aws_subnet.public_subnet.id}"
+  value = "${module.public_subnet.subnet_id}"
 }
 
 output "vpc_endpoint" {

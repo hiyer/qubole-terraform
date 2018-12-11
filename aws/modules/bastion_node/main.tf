@@ -48,7 +48,7 @@ resource "aws_security_group" "bastion_node" {
       cidr_blocks = ["${var.private_subnet_cidr}"]
     }
 
-    vpc_id = "${data.aws_vpc.default.id}"
+    vpc_id = "${var.vpc_id}"
 
     tags = "${merge(
             map("name", "${var.prefix}-bastion-sg"),

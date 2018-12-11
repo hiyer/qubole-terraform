@@ -3,7 +3,7 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_network_acl" "private_subnet" {
-  vpc_id = "${data.aws_vpc.default.id}"
+  vpc_id = "${var.vpc_id}"
   subnet_ids = ["${aws_subnet.private_subnet.id}"]
 
   tags = "${merge(
@@ -79,7 +79,7 @@ resource "aws_network_acl_rule" "https_in" {
   Private Subnet
 */
 resource "aws_subnet" "private_subnet" {
-  vpc_id = "${data.aws_vpc.default.id}"
+  vpc_id = "${var.vpc_id}"
   cidr_block = "${var.subnet_cidr}"
   tags = "${merge(
           map("name", "${var.prefix}-private-subnet"),
@@ -88,7 +88,7 @@ resource "aws_subnet" "private_subnet" {
 }
 
 resource "aws_route_table" "private_subnet" {
-  vpc_id = "${data.aws_vpc.default.id}"
+  vpc_id = "${var.vpc_id}"
 
   tags = "${merge(
           map("name", "${var.prefix}-private-subnet-rt"),

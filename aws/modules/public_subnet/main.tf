@@ -3,7 +3,7 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_network_acl" "public_subnet" {
-  vpc_id = "${data.aws_vpc.default.id}"
+  vpc_id = "${var.vpc_id}"
   subnet_ids = ["${aws_subnet.public_subnet.id}"]
 
   tags = "${merge(
@@ -88,12 +88,12 @@ resource "aws_network_acl_rule" "vpc_in" {
 
 # Internet gateway for the public subnet 
 resource "aws_internet_gateway" "public_subnet" {
-    vpc_id = "${data.aws_vpc.default.id}"
+    vpc_id = "${var.vpc_id}"
 }
 
 # Route table for the public subnet
 resource "aws_route_table" "public_subnet" {
-    vpc_id = "${data.aws_vpc.default.id}"
+    vpc_id = "${var.vpc_id}"
 
     route {
         cidr_block = "0.0.0.0/0"
@@ -108,7 +108,7 @@ resource "aws_route_table" "public_subnet" {
 
 # Public subnet
 resource "aws_subnet" "public_subnet" {
-    vpc_id = "${data.aws_vpc.default.id}"
+    vpc_id = "${var.vpc_id}"
     cidr_block = "${var.subnet_cidr}"
     tags = "${merge(
             map("name", "${var.prefix}-public-subnet"),

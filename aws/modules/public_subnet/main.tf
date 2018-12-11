@@ -18,7 +18,7 @@ resource "aws_network_acl_rule" "ssh_in" {
   egress = false
   count = "${length(var.whitelist_ip)}" 
   protocol   = "tcp"
-  rule_number    = 101
+  rule_number    = "${count.index + 101}"
   rule_action     = "allow"
   cidr_block = "${element(var.whitelist_ip, count.index)}"
   from_port  = 22
@@ -29,7 +29,7 @@ resource "aws_network_acl_rule" "ssh_in" {
 resource "aws_network_acl_rule" "ssh_out" {
   network_acl_id = "${aws_network_acl.public_subnet.id}"
   protocol   = "tcp"
-  rule_number   = 101
+  rule_number   = "${count.index + 101}"
   rule_action  = "allow"
   count = "${length(var.whitelist_ip)}" 
   cidr_block = "${element(var.whitelist_ip, count.index)}"

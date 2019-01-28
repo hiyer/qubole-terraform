@@ -2,9 +2,18 @@ data "aws_vpc" "default" {
   id = "${var.vpc_id}"
 }
 
+data "aws_availability_zones" "all" {
+  
+}
+
+locals {
+  num_subnets = "${var.subnet_cidr != "" ? 1 : min(length(data.aws_availability_zones.all.names), var.num_pvt_subnets)}"
+  newbits = "${ceil(log(local.num_subnets, 2))}"
+}
+
 resource "aws_network_acl" "private_subnet" {
   vpc_id = "${var.vpc_id}"
-  subnet_ids = ["${aws_subnet.private_subnet.id}"]
+  subnet_ids = ["${aws_subnet.private_subnet.*.id}"]
 
   tags = "${merge(
             map("name", "${var.prefix}-private-subnet-acl"),
@@ -79,10 +88,11 @@ resource "aws_network_acl_rule" "https_in" {
   Private Subnet
 */
 resource "aws_subnet" "private_subnet" {
+  count = "${local.num_subnets}"
   vpc_id = "${var.vpc_id}"
-  cidr_block = "${var.subnet_cidr}"
+  cidr_block = "${var.subnet_cidr != "" ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index)}"
   tags = "${merge(
-          map("name", "${var.prefix}-private-subnet"),
+          map("name", "${var.prefix}-private-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
           "${var.tags}"
         )}"
 }
@@ -97,6 +107,7 @@ resource "aws_route_table" "private_subnet" {
 }
 
 resource "aws_route_table_association" "private_subnet" {
-    subnet_id = "${aws_subnet.private_subnet.id}"
+    count = "${local.num_subnets}"
+    subnet_id = "${element(aws_subnet.private_subnet.*.id, count.index)}"
     route_table_id = "${aws_route_table.private_subnet.id}"
 }

@@ -37,7 +37,7 @@ resource "aws_security_group" "bastion_node" {
         from_port = 7000
         to_port = 7000
         protocol = "tcp"
-        cidr_blocks = ["${var.private_subnet_cidr}"]
+        cidr_blocks = ["${data.aws_vpc.default.cidr_block}"]
     }
     
     # Allow all outgoing traffic to private subnet
@@ -45,7 +45,7 @@ resource "aws_security_group" "bastion_node" {
       from_port = 0
       to_port = 65535
       protocol = "tcp"
-      cidr_blocks = ["${var.private_subnet_cidr}"]
+      cidr_blocks = ["${data.aws_vpc.default.cidr_block}"]
     }
 
     vpc_id = "${var.vpc_id}"

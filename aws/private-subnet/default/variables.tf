@@ -1,50 +1,51 @@
-# cidr block for the vpc
 variable "cidr_block" {
   default = "10.0.0.0/16"
+  description = "CIDR block for the VPC"
 }
 
-# Key pair to use for bastion node
 variable "aws_key_name" {
-  
+  description = "Key Pair for the bastion node"  
 }
 
-# prefix to apply for name tags
 variable "prefix" {
-  
+  description = "Prefix to apply for name tags"  
 }
 
-# other tags to apply
 variable "tags" {
   type = "map"
-
+  description = "Tags to apply on applicable resources"
   default = {}
 }
 
-# public key to use for bastion node. This is the
-# "account key" in cluster UI
 variable "ssh_public_key" {
-  
+  description = "SSH public key for SSH'ing into your bastion node. This is the Account key in the cluster details page"
 }
 
-# aws region
 variable "region" {
   default = "us-west-2"
+  description = "AWS Region"
 }
 
-# cidr for public subnet
 variable "public_subnet_cidr" {
   default = "10.0.0.0/24"
+  description = "CIDR for public subnet"
 }
 
-# cidr for private subnet
 variable "private_subnet_cidr" {
-  default = "10.0.1.0/24"
+  # default = "10.0.1.0/24"
+  default = ""
+  description = "CIDR for private subnet"
 }
 
-# Public IPs to whitelist SSH traffic from
-# (either NAT or tunnel servers)
 variable "whitelist_ip" {
   type = "list"
+  description = "List of IPs to whitelist SSH from"
+}
+
+variable "num_pvt_subnets" {
+  type = "string"
+  description = "Number of private subnets to create for cluster nodes"
+  default = "1"
 }
 
 

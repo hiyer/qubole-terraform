@@ -22,3 +22,9 @@ variable "subnet_cidr" {
   type = "string"
   description = "CIDR for the subnet"
 }
+
+variable "num_pvt_subnets" {
+  type = "string"
+  description = "Number of private subnets to create"
+  default = 1
+}

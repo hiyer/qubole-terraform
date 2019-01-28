@@ -45,6 +45,7 @@ module "private_subnet" {
   prefix = "${var.prefix}"
   whitelist_outgoing = "${var.whitelist_outgoing}"
   subnet_cidr = "${var.private_subnet_cidr}"
+  num_pvt_subnets = "${var.num_pvt_subnets}"
 }
 
 resource "aws_vpc_endpoint" "s3" {

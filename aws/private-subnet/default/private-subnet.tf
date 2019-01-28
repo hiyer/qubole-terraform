@@ -34,6 +34,7 @@ module "private_subnet" {
   prefix = "${var.prefix}"
   whitelist_outgoing = "0.0.0.0/0"
   subnet_cidr = "${var.private_subnet_cidr}"
+  num_pvt_subnets = "${var.num_pvt_subnets}"
 }
 
 # Create a VPC

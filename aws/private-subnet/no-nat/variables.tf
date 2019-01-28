@@ -37,16 +37,20 @@ variable "private_subnet_cidr" {
   description = "CIDR for the private subnet"
 }
 
-# Public IPs to whitelist SSH traffic from
-# (either NAT or tunnel servers)
 variable "whitelist_ip" {
   type = "list"
+  description = "List of IPs to whitelist SSH from"
 }
 
-# Public IPs of Qubole to whitelist
-# HTTPS traffic to/from
+variable "num_pvt_subnets" {
+  type = "string"
+  description = "Number of private subnets to create for cluster nodes"
+  default = "1"
+}
+
 variable "whitelist_outgoing" {
   default = ""
+  description = "Public IP to whitelist outgoing traffic to."
 }
 
 output "bastion_ip" {

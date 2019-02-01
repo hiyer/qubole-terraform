@@ -32,9 +32,8 @@ variable "public_subnet_cidr" {
 }
 
 variable "private_subnet_cidr" {
-  # default = "10.0.1.0/24"
   default = ""
-  description = "CIDR for private subnet"
+  description = "CIDR for private subnet. Do not specify if using multiple subnets"
 }
 
 variable "whitelist_ip" {
@@ -44,25 +43,29 @@ variable "whitelist_ip" {
 
 variable "num_pvt_subnets" {
   type = "string"
-  description = "Number of private subnets to create for cluster nodes"
+  description = "Number of private subnets to create for cluster nodes. Do not specify private_subnet_cidr if using multiple subnets"
   default = "1"
 }
 
 
 output "bastion_ip" {
   value = "${module.bastion_node.public_ip}"
+  description = "IP address of the bastion node"
 }
 
 output "vpc_id" {
   value = "${aws_vpc.default.id}"
+  description = "VPC Id"
 }
 
 output "private_subnet_id" {
   value = "${module.private_subnet.subnet_id}"
+  description = "Private subnet id"
 }
 
 output "public_subnet_id" {
   value = "${module.public_subnet.subnet_id}"
+  description = "Public subnet id"
 }
 
 

@@ -18,11 +18,6 @@ variable "prefix" {
   description = "Prefix for 'name' tag"
 }
 
-variable "private_subnet_cidr" {
-  type = "string"
-  description = "CIDR specification for the *private* subnet, to allow reverse tunnel traffic"
-}
-
 variable "public_subnet_id" {
   type = "string"
   description = "Id of the public subnet in which to create the bastion node"

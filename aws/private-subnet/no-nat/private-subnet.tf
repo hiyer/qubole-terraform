@@ -14,6 +14,16 @@ resource "aws_vpc" "default" {
           )}"
 }
 
+data "aws_availability_zones" "all" {
+  
+}
+
+locals {
+  num_pvt_subnets = "${var.num_pvt_subnets == 1 ? 1 : min(length(data.aws_availability_zones.all.names), var.num_pvt_subnets)}"
+  num_subnets = "${local.num_pvt_subnets + 1}"  # One public subnet as well
+  newbits = "${ceil(log(local.num_subnets, 2))}"
+}
+
 module "public_subnet" {
   source = "../../modules/public_subnet"
   
@@ -21,7 +31,7 @@ module "public_subnet" {
   tags = "${var.tags}"
   prefix = "${var.prefix}"
   whitelist_ip = "${var.whitelist_ip}"
-  subnet_cidr = "${var.public_subnet_cidr}"
+  subnet_cidr = "${var.num_pvt_subnets == 1 ? var.public_subnet_cidr : cidrsubnet(var.cidr_block, local.newbits, 0)}"
 }
 
 module "bastion_node" {
@@ -31,7 +41,6 @@ module "bastion_node" {
   prefix = "${var.prefix}"
   whitelist_ip = "${var.whitelist_ip}"
   aws_key_name = "${var.aws_key_name}"
-  private_subnet_cidr = "${var.private_subnet_cidr}"
   public_subnet_id = "${module.public_subnet.subnet_id}"
   ssh_public_key = "${var.ssh_public_key}"
   vpc_id = "${aws_vpc.default.id}"

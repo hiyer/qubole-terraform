@@ -27,13 +27,13 @@ variable "region" {
 }
 
 variable "public_subnet_cidr" {
-  default = "10.0.0.0/24"
-  description = "CIDR for public subnet"
+  default = ""
+  description = "CIDR for public subnet. Auto-calculated if not specified. Ignored when using multiple subnets."
 }
 
 variable "private_subnet_cidr" {
   default = ""
-  description = "CIDR for private subnet. Do not specify if using multiple subnets"
+  description = "CIDR for private subnet. Auto-calculated if not specified. Ignored when using multiple subnets."
 }
 
 variable "whitelist_ip" {

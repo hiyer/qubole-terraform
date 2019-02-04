@@ -90,7 +90,7 @@ resource "aws_subnet" "private_subnet" {
   count = "${var.num_pvt_subnets}"
   vpc_id = "${var.vpc_id}"
   availability_zone = "${element(data.aws_availability_zones.all.names, count.index)}"
-  cidr_block = "${var.subnet_cidr != "" ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index + 1)}"
+  cidr_block = "${var.subnet_cidr != "" && var.num_pvt_subnets == 1 ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index + 1)}"
   tags = "${merge(
           map("name", "${var.prefix}-private-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
           "${var.tags}"

@@ -31,7 +31,7 @@ module "public_subnet" {
   tags = "${var.tags}"
   prefix = "${var.prefix}"
   whitelist_ip = "${var.whitelist_ip}"
-  subnet_cidr = "${var.num_pvt_subnets == 1 ? var.public_subnet_cidr : cidrsubnet(var.cidr_block, local.newbits, 0)}"
+  subnet_cidr = "${var.num_pvt_subnets == 1 && var.public_subnet_cidr != "" ? var.public_subnet_cidr : cidrsubnet(var.cidr_block, local.newbits, 0)}"
 }
 
 module "bastion_node" {
@@ -68,7 +68,7 @@ resource "aws_vpc_endpoint" "ec2" {
   vpc_id = "${aws_vpc.default.id}"
   service_name = "com.amazonaws.${var.region}.ec2"
   vpc_endpoint_type = "Interface"
-  subnet_ids = ["${module.private_subnet.subnet_id}"]
+  subnet_ids = "${module.private_subnet.subnet_id}"
   private_dns_enabled = true
   security_group_ids = ["${aws_security_group.ec2_endpoint.id}"]
 }

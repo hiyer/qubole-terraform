@@ -9,17 +9,17 @@ NB: this configuration only works for accounts on us.qubole.com
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| aws\_key\_name | Key Pair to use for the bastion node | string | - | yes |
-| cidr\_block | CIDR block for the VPC | string | `10.0.0.0/16` | no |
-| num\_pvt\_subnets | Number of private subnets to create for cluster nodes. | string | `1` | no |
-| prefix | Prefix to apply for name tags | string | - | yes |
-| private\_subnet\_cidr | CIDR for private subnet. Auto-calculated if not specified. Ignored when using multiple subnets. | string | `` | no |
-| public\_subnet\_cidr | CIDR for the public subnet. Auto-calculated if not specified. Ignored when using multiple subnets. | string | `` | no |
-| region | AWS region | string | `us-west-2` | no |
-| ssh\_public\_key | Public key to use for bastion node. This is the account key in cluster UI | string | - | yes |
+| aws\_key\_name | Key Pair to use for the bastion node | string | n/a | yes |
+| cidr\_block | CIDR block for the VPC | string | `"10.0.0.0/16"` | no |
+| num\_pvt\_subnets | Number of private subnets to create for cluster nodes. | string | `"1"` | no |
+| prefix | Prefix to apply for name tags | string | n/a | yes |
+| private\_subnet\_cidr | CIDR for private subnet. Auto-calculated if not specified. Ignored when using multiple subnets. | string | `""` | no |
+| public\_subnet\_cidr | CIDR for the public subnet. Auto-calculated if not specified. Ignored when using multiple subnets. | string | `""` | no |
+| region | AWS region | string | `"us-west-2"` | no |
+| ssh\_public\_key | Public key to use for bastion node. This is the account key in cluster UI | string | n/a | yes |
 | tags | Other tags to apply | map | `<map>` | no |
-| whitelist\_ip | List of IPs to whitelist SSH from | list | - | yes |
-| whitelist\_outgoing | Public IP to whitelist outgoing traffic to. | string | `` | no |
+| whitelist\_ip | List of IPs to whitelist SSH from | list | n/a | yes |
+| whitelist\_outgoing | Public IP to whitelist outgoing traffic to. | string | `""` | no |
 
 ## Outputs
 
@@ -30,3 +30,4 @@ NB: this configuration only works for accounts on us.qubole.com
 | public\_subnet\_id | Public subnet Id |
 | vpc\_endpoint | VPC EC2 Endpoint |
 | vpc\_id | VPC Id |
+

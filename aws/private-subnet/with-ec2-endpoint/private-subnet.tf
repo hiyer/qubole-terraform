@@ -68,7 +68,7 @@ resource "aws_vpc_endpoint" "ec2" {
   vpc_id = "${aws_vpc.default.id}"
   service_name = "com.amazonaws.${var.region}.ec2"
   vpc_endpoint_type = "Interface"
-  subnet_ids = "${module.private_subnet.subnet_id}"
+  subnet_ids = ["${module.private_subnet.subnet_id}"]
   private_dns_enabled = true
   security_group_ids = ["${aws_security_group.ec2_endpoint.id}"]
 }
@@ -82,7 +82,7 @@ resource "aws_security_group" "ec2_endpoint" {
       from_port = 80
       to_port = 80
       protocol = "tcp"
-      cidr_blocks = ["${var.private_subnet_cidr}"]
+      cidr_blocks = ["${var.cidr_block}"]
   }
 
   # Allow https from clusters
@@ -90,7 +90,7 @@ resource "aws_security_group" "ec2_endpoint" {
       from_port = 443
       to_port = 443
       protocol = "tcp"
-      cidr_blocks = ["${var.private_subnet_cidr}"]
+      cidr_blocks = ["${var.cidr_block}"]
   }
 }
 

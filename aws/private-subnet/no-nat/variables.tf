@@ -15,7 +15,7 @@ variable "tags" {
   type = "map"
 
   default = {}
-  description = "Other tags to apply"
+  description = "Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources."
 }
 
 variable "ssh_public_key" {

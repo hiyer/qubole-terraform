@@ -13,7 +13,7 @@ variable "prefix" {
 
 variable "tags" {
   type = "map"
-  description = "Tags to apply on applicable resources"
+  description = "Tags to apply on applicable resources It is *highly recommended* to specify tags so you can identify your resources."
   default = {}
 }
 

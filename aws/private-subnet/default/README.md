@@ -16,7 +16,7 @@ The clusters reside in the private subnet, and there is a bastion host in the pu
 | public\_subnet\_cidr | CIDR for public subnet. Auto-calculated if not specified. Ignored when using multiple subnets. | string | `""` | no |
 | region | AWS Region | string | `"us-west-2"` | no |
 | ssh\_public\_key | SSH public key for SSH'ing into your bastion node. This is the Account key in the cluster details page | string | n/a | yes |
-| tags | Tags to apply on applicable resources | map | `<map>` | no |
+| tags | Tags to apply on applicable resources It is *highly recommended* to specify tags so you can identify your resources. | map | `<map>` | no |
 | whitelist\_ip | List of IPs to whitelist SSH from | list | n/a | yes |
 
 ## Outputs

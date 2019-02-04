@@ -6,17 +6,19 @@ This template creates a VPC for use with Qubole clusters in a public subnet base
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| cidr\_block | cidr block for the vpc | string | `"10.0.0.0/16"` | no |
-| prefix | prefix to apply for name tags | string | n/a | yes |
-| public\_subnet\_cidr | cidr for public subnet | string | `"10.0.0.0/24"` | no |
-| region | aws region | string | `"us-west-2"` | no |
-| tags | other tags to apply | map | `<map>` | no |
-| whitelist\_ip | Public IPs to whitelist SSH traffic from(either NAT or tunnel servers) | list | n/a | yes |
+| cidr\_block | CIDR block for the VPC | string | `"10.0.0.0/16"` | no |
+| num\_subnets | Number of subnets to create | string | `"1"` | no |
+| prefix | Prefix to be used for 'name' tags. e.g. the vpc would be named <prefix>-vpc | string | n/a | yes |
+| public\_subnet\_cidr | CIDR block for the subnet. Auto-calculated if not specified. Ignored when using multiple subnets | string | `""` | no |
+| region | AWS region to create the resources in | string | `"us-west-2"` | no |
+| tags | Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources. | map | `<map>` | no |
+| whitelist\_ip | List of IPs to whitelist SSH from | list | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
+| network\_acl\_id |  |
 | public\_subnet\_id |  |
 | vpc\_id |  |
 

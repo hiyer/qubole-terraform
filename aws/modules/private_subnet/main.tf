@@ -25,7 +25,7 @@ resource "aws_network_acl_rule" "vpc_in" {
   network_acl_id = "${aws_network_acl.private_subnet.id}"
   egress = false
   protocol   = "tcp"
-  rule_number    = 100
+  rule_number    = 101
   rule_action     = "allow"
   cidr_block = "${data.aws_vpc.default.cidr_block}"
   from_port  = 0
@@ -37,7 +37,7 @@ resource "aws_network_acl_rule" "vpc_out" {
   network_acl_id = "${aws_network_acl.private_subnet.id}"
   egress = true
   protocol   = "tcp"
-  rule_number    = 100
+  rule_number    = 101
   rule_action     = "allow"
   cidr_block = "${data.aws_vpc.default.cidr_block}"
   from_port  = 0
@@ -50,7 +50,7 @@ resource "aws_network_acl_rule" "http_out" {
   network_acl_id = "${aws_network_acl.private_subnet.id}"
   egress = true
   protocol   = "tcp"
-  rule_number    = 200
+  rule_number    = 201
   rule_action     = "allow"
   cidr_block = "${var.whitelist_outgoing}"
   from_port  = 80
@@ -63,7 +63,7 @@ resource "aws_network_acl_rule" "https_out" {
   network_acl_id = "${aws_network_acl.private_subnet.id}"
   egress = true
   protocol   = "tcp"
-  rule_number    = 300
+  rule_number    = 301
   rule_action     = "allow"
   cidr_block = "${var.whitelist_outgoing}"
   from_port  = 443
@@ -76,7 +76,7 @@ resource "aws_network_acl_rule" "https_in" {
   network_acl_id = "${aws_network_acl.private_subnet.id}"
   egress = false
   protocol   = "tcp"
-  rule_number    = 200
+  rule_number    = 201
   rule_action     = "allow"
   cidr_block = "${var.whitelist_outgoing}"
   from_port  = 1024

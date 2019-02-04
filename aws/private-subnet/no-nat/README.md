@@ -17,7 +17,7 @@ NB: this configuration only works for accounts on us.qubole.com
 | public\_subnet\_cidr | CIDR for the public subnet. Auto-calculated if not specified. Ignored when using multiple subnets. | string | `""` | no |
 | region | AWS region | string | `"us-west-2"` | no |
 | ssh\_public\_key | Public key to use for bastion node. This is the account key in cluster UI | string | n/a | yes |
-| tags | Other tags to apply | map | `<map>` | no |
+| tags | Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources. | map | `<map>` | no |
 | whitelist\_ip | List of IPs to whitelist SSH from | list | n/a | yes |
 | whitelist\_outgoing | Public IP to whitelist outgoing traffic to. | string | `""` | no |
 

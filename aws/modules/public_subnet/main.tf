@@ -2,9 +2,18 @@ data "aws_vpc" "default" {
   id = "${var.vpc_id}"
 }
 
+data "aws_availability_zones" "all" {
+  
+}
+
+locals {
+  newbits = "${ceil(log(var.num_subnets, 2))}"
+}
+
+
 resource "aws_network_acl" "public_subnet" {
   vpc_id = "${var.vpc_id}"
-  subnet_ids = ["${aws_subnet.public_subnet.id}"]
+  subnet_ids = ["${aws_subnet.public_subnet.*.id}"]
 
   tags = "${merge(
             map("name", "${var.prefix}-public-subnet-acl"),
@@ -108,16 +117,20 @@ resource "aws_route_table" "public_subnet" {
 
 # Public subnet
 resource "aws_subnet" "public_subnet" {
+    count = "${var.num_subnets}"
+
     vpc_id = "${var.vpc_id}"
-    cidr_block = "${var.subnet_cidr}"
+    availability_zone = "${element(data.aws_availability_zones.all.names, count.index)}"
+    cidr_block = "${var.subnet_cidr != "" && var.num_subnets == 1 ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index)}"
     tags = "${merge(
-            map("name", "${var.prefix}-public-subnet"),
+            map("name", "${var.prefix}-public-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
             "${var.tags}"
           )}"
 }
 
 # Route table association
 resource "aws_route_table_association" "public_subnet" {
-    subnet_id = "${aws_subnet.public_subnet.id}"
+    count = "${var.num_subnets}"
+    subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
     route_table_id = "${aws_route_table.public_subnet.id}"
 }

@@ -1,44 +1,48 @@
-# cidr block for the vpc
 variable "cidr_block" {
   default = "10.0.0.0/16"
+  description = "CIDR block for the VPC"
 }
 
-# prefix to apply for name tags
 variable "prefix" {
-  
+  description = "Prefix to be used for 'name' tags. e.g. the vpc would be named <prefix>-vpc"
 }
 
-# other tags to apply
 variable "tags" {
   type = "map"
-
+  description = "Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources."
   default = {}
 }
 
-# aws region
 variable "region" {
+  description = "AWS region to create the resources in"
   default = "us-west-2"
 }
 
-# cidr for public subnet
 variable "public_subnet_cidr" {
-  default = "10.0.0.0/24"
+  description = "CIDR block for the subnet. Auto-calculated if not specified. Ignored when using multiple subnets"
+  default = ""
 }
 
-# Public IPs to whitelist SSH traffic from
-# (either NAT or tunnel servers)
+variable "num_subnets" {
+  type = "string"
+  description = "Number of subnets to create"
+  default = "1"
+}
+
 variable "whitelist_ip" {
   type = "list"
+  description = "List of IPs to whitelist SSH from"
 }
 
 output "vpc_id" {
   value = "${aws_vpc.default.id}"
+  description = "Id of the VPC"
 }
 
 output "public_subnet_id" {
-  value = "${aws_subnet.public_subnet.id}"
+  value = "${module.public_subnet.subnet_id}"
+  description = "Id of the public subnet(s)"
 }
-
 
 
 

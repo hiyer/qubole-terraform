@@ -9,7 +9,7 @@ resource "aws_vpc" "default" {
   enable_dns_hostnames = true
   enable_dns_support = true
   tags = "${merge(
-            map("name", "${var.prefix}-vpc"),
+            map("Name", "${var.prefix}-vpc"),
             "${var.tags}"
           )}"
 }
@@ -44,6 +44,7 @@ module "bastion_node" {
   public_subnet_id = "${module.public_subnet.subnet_id}"
   ssh_public_key = "${var.ssh_public_key}"
   vpc_id = "${aws_vpc.default.id}"
+  instance_type = "${var.bastion_node_instance_type}"
 }
 
 module "private_subnet" {
@@ -68,7 +69,7 @@ resource "aws_vpc_endpoint" "ec2" {
   vpc_id = "${aws_vpc.default.id}"
   service_name = "com.amazonaws.${var.region}.ec2"
   vpc_endpoint_type = "Interface"
-  subnet_ids = ["${module.private_subnet.subnet_id}"]
+  subnet_ids = ["${module.private_subnet.subnet_ids}"]
   private_dns_enabled = true
   security_group_ids = ["${aws_security_group.ec2_endpoint.id}"]
 }
@@ -101,7 +102,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   subnet_id = "${module.public_subnet.subnet_id}"
   allocation_id = "${aws_eip.nat_gateway.id}"
   tags = "${merge(
-          map("name", "${var.prefix}-nat-gw"),
+          map("Name", "${var.prefix}-nat-gw"),
           "${var.tags}"
         )}"
 }
@@ -112,7 +113,7 @@ resource "aws_eip" "nat_gateway" {
 
   vpc = true
   tags = "${merge(
-            map("name", "${var.prefix}-nat-eip"),
+            map("Name", "${var.prefix}-nat-eip"),
             "${var.tags}"
           )}"
 }

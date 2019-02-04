@@ -51,7 +51,7 @@ resource "aws_security_group" "bastion_node" {
     vpc_id = "${var.vpc_id}"
 
     tags = "${merge(
-            map("name", "${var.prefix}-bastion-sg"),
+            map("Name", "${var.prefix}-bastion-sg"),
             "${var.tags}"
           )}"
 }
@@ -84,7 +84,7 @@ resource "aws_instance" "bastion_node" {
                 EOF
 
     tags = "${merge(
-            map("name", "${var.prefix}-bastion-instance"),
+            map("Name", "${var.prefix}-bastion-instance"),
             "${var.tags}"
           )}"
 }

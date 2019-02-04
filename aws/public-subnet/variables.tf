@@ -39,8 +39,8 @@ output "vpc_id" {
   description = "Id of the VPC"
 }
 
-output "public_subnet_id" {
-  value = "${module.public_subnet.subnet_id}"
+output "public_subnet_ids" {
+  value = "${module.public_subnet.subnet_ids}"
   description = "Id of the public subnet(s)"
 }
 

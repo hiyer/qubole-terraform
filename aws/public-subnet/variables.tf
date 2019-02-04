@@ -36,16 +36,13 @@ variable "whitelist_ip" {
 
 output "vpc_id" {
   value = "${aws_vpc.default.id}"
+  description = "Id of the VPC"
 }
 
 output "public_subnet_id" {
   value = "${module.public_subnet.subnet_id}"
+  description = "Id of the public subnet(s)"
 }
-
-output "network_acl_id" {
-  value = "${module.public_subnet.network_acl_id}"
-}
-
 
 
 

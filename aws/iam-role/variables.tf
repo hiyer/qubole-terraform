@@ -25,3 +25,8 @@ variable "role_name" {
   description = "Role name"
   default = "Qubole access role"
 }
+
+variable "s3location" {
+  type = "string"
+  description = "S3 location to save logs, outputs, etc"
+}

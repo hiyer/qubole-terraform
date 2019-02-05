@@ -1,5 +1,25 @@
+resource "aws_iam_role" "qubole_role" {
+  name = "${var.role_name}"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": "AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_iam_role_policy" "qubole_policy" {
-  name = "Qubole Policy"
+  name = "${var.policy_name}"
 
   policy = <<EOF
 { "Version": "2019-30-01",
@@ -36,10 +56,10 @@ resource "aws_iam_role_policy" "qubole_policy" {
            "ec2:DetachVolume",
            "ec2:CreateTags",
            "ec2:DeleteTags" ],
-         "Resource": [ "arn:aws:ec2:<AWS Region>:<AWS Account ID>:instance/*" ],
+         "Resource": [ "arn:aws:ec2:${var.region}:${var.account_id}:instance/*" ],
          "Condition": {
            "StringEquals": {
-                "ec2:InstanceProfile": "arn:aws:iam::<AWS Account ID>:instance-profile/<AWS Role Name>"
+                "ec2:InstanceProfile": "arn:aws:iam::${var.account_id}:instance-profile/${aws_iam_role.qubole_role.name}"
            }
          }
        },
@@ -49,10 +69,10 @@ resource "aws_iam_role_policy" "qubole_policy" {
            "ec2:RunInstances",
            "ec2:CreateTags",
            "ec2:DeleteTags" ],
-       "Resource": [ "arn:aws:ec2:<AWS Region>:<AWS Account ID>:instance/*" ],
+       "Resource": [ "arn:aws:ec2:${var.region}:${var.account_id}:instance/*" ],
        "Condition": {
            "StringEquals": {
-               "ec2:InstanceProfile": "arn:aws:iam::<AWS Account ID>:instance-profile/<AWS Role Name>"
+               "ec2:InstanceProfile": "arn:aws:iam::${var.account_id}:instance-profile/${aws_iam_role.qubole_role.name}"
            }
          }
        },
@@ -62,26 +82,24 @@ resource "aws_iam_role_policy" "qubole_policy" {
            "ec2:RunInstances",
            "ec2:CreateTags",
            "ec2:DeleteTags" ],
-       "Resource": [ "arn:aws:ec2:<AWS Region>:<AWS Account ID>:subnet/*" ],
+       "Resource": [ "arn:aws:ec2:${var.region}:${var.account_id}:subnet/*" ],
        "Condition": {
            "StringEquals": {
-                "ec2:vpc": "arn:aws:ec2:<AWS Region>:<AWS Account ID>:vpc/<VPC ID>"
+                "ec2:vpc": "arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"
            }
          }
        },
        { "Sid": "RunInstanceResourcePermissions",
          "Effect": "Allow",
          "Action": [
-           "ec2:RunInstances",
-           "ec2:CreateTags",
-           "ec2:DeleteTags" ],
+           "ec2:RunInstances" ],
        "Resource": [
-           "arn:aws:ec2:<AWS Region>::image/*",
-           "arn:aws:ec2:<AWS Region>::snapshot/*",
-           "arn:aws:ec2:<AWS Region>:<AWS Account ID>:volume/*",
-           "arn:aws:ec2:<AWS Region>:<AWS Account ID>:network-interface/*",
-           "arn:aws:ec2:<AWS Region>:<AWS Account ID>:key-pair/*",
-           "arn:aws:ec2:<AWS Region>:<AWS Account ID>:security-group/*" ]
+           "arn:aws:ec2:${var.region}::image/*",
+           "arn:aws:ec2:${var.region}::snapshot/*",
+           "arn:aws:ec2:${var.region}:${var.account_id}:volume/*",
+           "arn:aws:ec2:${var.region}:${var.account_id}:network-interface/*",
+           "arn:aws:ec2:${var.region}:${var.account_id}:key-pair/*",
+           "arn:aws:ec2:${var.region}:${var.account_id}:security-group/*" ]
        },
        { "Sid": "SecurityGroupActions",
          "Effect": "Allow",
@@ -96,7 +114,7 @@ resource "aws_iam_role_policy" "qubole_policy" {
        "Resource": [ "*" ],
        "Condition": {
            "StringEquals": {
-               "ec2:vpc": "arn:aws:ec2:<AWS Region>:<AWS Account ID>:vpc/<VPC ID>"
+               "ec2:vpc": "arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"
            }
          }
        },
@@ -108,9 +126,9 @@ resource "aws_iam_role_policy" "qubole_policy" {
            "ec2:CreateTags",
            "ec2:DeleteTags" ],
        "Resource": [
-           "arn:aws:ec2:<AWS Region>:<AWS Account ID>:volume/*" ]
+           "arn:aws:ec2:${var.region}:${var.account_id}:volume/*" ]
        },
-       {
+       { "Sid": "SpotFleet",
        "Effect": "Allow",
        "Action": [
           "iam:CreateServiceLinkedRole",

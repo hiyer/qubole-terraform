@@ -53,6 +53,12 @@ variable "whitelist_outgoing" {
   description = "Public IP to whitelist outgoing traffic to."
 }
 
+variable "bastion_node_instance_type" {
+  type = "string"
+  description = "Instance type for bastion node"
+  default = "t3.small"
+}
+
 output "bastion_ip" {
   value = "${module.bastion_node.public_ip}"
   description = "IP address of the bastion node"
@@ -64,7 +70,7 @@ output "vpc_id" {
 }
 
 output "private_subnet_id" {
-  value = "${module.private_subnet.subnet_id}"
+  value = "${module.private_subnet.subnet_ids}"
   description = "Private subnet Id"
 }
 

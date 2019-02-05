@@ -32,3 +32,9 @@ variable "vpc_id" {
   type = "string"
   description = "Id of the VPC to bring up the instance in"
 }
+
+variable "instance_type" {
+  type = "string"
+  description = "Instance type for the bastion node"
+  default = "t3.small"
+}

@@ -16,7 +16,7 @@ resource "aws_network_acl" "public_subnet" {
   subnet_ids = ["${aws_subnet.public_subnet.*.id}"]
 
   tags = "${merge(
-            map("name", "${var.prefix}-public-subnet-acl"),
+            map("Name", "${var.prefix}-public-subnet-acl"),
             "${var.tags}"
           )}"
 }
@@ -110,7 +110,7 @@ resource "aws_route_table" "public_subnet" {
     }
 
     tags = "${merge(
-            map("name", "${var.prefix}-public-subnet-rt"),
+            map("Name", "${var.prefix}-public-subnet-rt"),
             "${var.tags}"
           )}"
 }
@@ -123,7 +123,7 @@ resource "aws_subnet" "public_subnet" {
     availability_zone = "${element(data.aws_availability_zones.all.names, count.index)}"
     cidr_block = "${var.subnet_cidr != "" && var.num_subnets == 1 ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index)}"
     tags = "${merge(
-            map("name", "${var.prefix}-public-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
+            map("Name", "${var.prefix}-public-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
             "${var.tags}"
           )}"
 }

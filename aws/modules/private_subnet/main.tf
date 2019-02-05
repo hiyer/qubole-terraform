@@ -15,7 +15,7 @@ resource "aws_network_acl" "private_subnet" {
   subnet_ids = ["${aws_subnet.private_subnet.*.id}"]
 
   tags = "${merge(
-            map("name", "${var.prefix}-private-subnet-acl"),
+            map("Name", "${var.prefix}-private-subnet-acl"),
             "${var.tags}"
           )}"
 }
@@ -92,7 +92,7 @@ resource "aws_subnet" "private_subnet" {
   availability_zone = "${element(data.aws_availability_zones.all.names, count.index)}"
   cidr_block = "${var.subnet_cidr != "" && var.num_pvt_subnets == 1 ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index + 1)}"
   tags = "${merge(
-          map("name", "${var.prefix}-private-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
+          map("Name", "${var.prefix}-private-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
           "${var.tags}"
         )}"
 }
@@ -101,7 +101,7 @@ resource "aws_route_table" "private_subnet" {
   vpc_id = "${var.vpc_id}"
 
   tags = "${merge(
-          map("name", "${var.prefix}-private-subnet-rt"),
+          map("Name", "${var.prefix}-private-subnet-rt"),
           "${var.tags}"
         )}"
 }

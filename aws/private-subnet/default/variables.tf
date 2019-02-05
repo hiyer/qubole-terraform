@@ -47,6 +47,11 @@ variable "num_pvt_subnets" {
   default = "1"
 }
 
+variable "bastion_node_instance_type" {
+  type = "string"
+  description = "Instance type for bastion node"
+  default = "t3.small"
+}
 
 output "bastion_ip" {
   value = "${module.bastion_node.public_ip}"
@@ -59,7 +64,7 @@ output "vpc_id" {
 }
 
 output "private_subnet_id" {
-  value = "${module.private_subnet.subnet_id}"
+  value = "${module.private_subnet.subnet_ids}"
   description = "Private subnet id"
 }
 

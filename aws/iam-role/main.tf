@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "${var.region}"
+}
+
 data "aws_iam_policy_document" "qubole_policy" {
   statement {
     sid = "NonResourceBasedPermissions",
@@ -162,7 +166,7 @@ data "aws_iam_policy_document" "qubole_policy" {
     ]
     resources = [
       "arn:aws:s3:::${var.s3location}/*",
-      "arn:aws:s3::${var.s3location}"
+      "arn:aws:s3:::${var.s3location}"
     ]
   }
 
@@ -179,15 +183,16 @@ data "aws_iam_policy_document" "qubole_policy" {
   }
 }
 
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      type = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
+resource "aws_iam_policy" "access_policy" {
+  name = "${var.role_name}-access-policy"
+  policy = "${data.aws_iam_policy_document.qubole_policy.json}"
 }
+
+resource "aws_iam_role_policy_attachment" "access_policy" {
+  role = "${aws_iam_role.qubole_role.name}"
+  policy_arn = "${aws_iam_policy.access_policy.arn}"
+}
+
 
 data "aws_iam_policy_document" "cross_account_policy" {
   statement {
@@ -201,50 +206,62 @@ data "aws_iam_policy_document" "cross_account_policy" {
   }
 }
 
+resource "aws_iam_policy" "cross_account_policy" {
+  name = "${var.role_name}-cross-account-policy"
+  policy = "${data.aws_iam_policy_document.cross_account_policy.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "cross_account_policy" {
+  role = "${aws_iam_role.qubole_role.name}"
+  policy_arn = "${aws_iam_policy.cross_account_policy.arn}"
+}
+
 data "aws_iam_policy_document" "trust_policy" {
   statement {
-   principals {
-     type = "Service"
-     identifiers = ["ec2.amazonaws.com"]
+    principals {
+      type = "Service"
+      identifiers = ["ec2.amazonaws.com"]
     }
-   actions = ["sts:AssumeRole"]
+    actions = ["sts:AssumeRole"]
   }
   statement {
     principals {
       type = "AWS"
       identifiers = ["arn:aws:iam::${var.qubole_account_id}:root"]
-      actions = ["sts:AssumeRole"]
-      condition {
-        test = "StringEquals"
-        variable = "sts:ExternalId"
-        values = [
-          "${var.qubole_external_id}"
-        ]
-      }
+    }
+    actions = ["sts:AssumeRole"]
+    condition {
+      test = "StringEquals"
+      variable = "sts:ExternalId"
+      values = [
+        "${var.qubole_external_id}"
+      ]
     }
   }
 }
 
+# resource "aws_iam_policy" "trust_policy" {
+#   name = "${var.role_name}-trust-policy"
+#   policy = "${data.aws_iam_policy_document.trust_policy.json}"
+# }
+
+# resource "aws_iam_role_policy_attachment" "trust_policy" {
+#   role = "${aws_iam_role.qubole_role.name}"
+#   policy_arn = "${aws_iam_policy.trust_policy.arn}"
+# }
+
+# data "aws_iam_policy_document" "assume_role_policy" {
+#   statement {
+#     actions = ["sts:AssumeRole"]
+#     principals {
+#       type = "Service"
+#       identifiers = ["ec2.amazonaws.com"]
+#     }
+#   }
+# }
+
 resource "aws_iam_role" "qubole_role" {
   name = "${var.role_name}"
-
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+  assume_role_policy = "${data.aws_iam_policy_document.trust_policy.json}"
 }
 
-resource "aws_iam_role_policy" "qubole_access_policy" {
-  name = "${var.role_name} Access Policy"
-  role = "${aws_iam_role.qubole_role.id}"
-  policy = "${data.aws_iam_policy_document.qubole_policy.json}"
-}
-
-resource "aws_iam_role_policy" "qubole_cross_account_policy" {
-  name = "${var.role_name} Cross Account Policy"
-  role = "${aws_iam_role.qubole_role.id}"
-  policy = "${data.aws_iam_policy_document.cross_account_policy.json}"
-}
-
-resource "aws_iam_role_policy" "qubole_trust_policy" {
-  name = "${var.role_name} Trust Policy"
-  role = "${aws_iam_role.qubole_role.id}"
-  policy = "${data.aws_iam_policy_document.trust_policy.json}"
-}

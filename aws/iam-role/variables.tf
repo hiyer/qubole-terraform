@@ -17,7 +17,7 @@ variable "vpc_id" {
 variable "role_name" {
   type = "string"
   description = "Role name"
-  default = "Qubole access role"
+  default = "Qubole-access-role"
 }
 
 variable "s3location" {
@@ -33,4 +33,9 @@ variable "qubole_account_id" {
 variable "qubole_external_id" {
   type = "string"
   description = "Qubole External Id"
+}
+
+output "role_arn" {
+  value = "${aws_iam_role.qubole_role.arn}"
+  description = "ARN of the role"
 }

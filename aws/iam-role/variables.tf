@@ -14,12 +14,6 @@ variable "vpc_id" {
   description = "VPC to restrict the compute resources to"
 }
 
-variable "policy_name" {
-  type = "string"
-  description = "Policy name"
-  default = "Qubole access policy"
-}
-
 variable "role_name" {
   type = "string"
   description = "Role name"
@@ -29,4 +23,14 @@ variable "role_name" {
 variable "s3location" {
   type = "string"
   description = "S3 location to save logs, outputs, etc"
+}
+
+variable "qubole_account_id" {
+  type = "string"
+  description = "Qubole Trusted Account Id"
+}
+
+variable "qubole_external_id" {
+  type = "string"
+  description = "Qubole External Id"
 }

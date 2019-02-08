@@ -18,6 +18,6 @@ This template creates a VPC for use with Qubole clusters in a public subnet base
 
 | Name | Description |
 |------|-------------|
-| public\_subnet\_id | Id of the public subnet(s) |
+| public\_subnet\_ids | Id of the public subnet(s) |
 | vpc\_id | Id of the VPC |
 

@@ -39,3 +39,8 @@ output "role_arn" {
   value = "${aws_iam_role.qubole_role.arn}"
   description = "ARN of the role"
 }
+
+output "instance_profile_arn" {
+  value = "${aws_iam_instance_profile.qubole_profile.arn}"
+  description = "ARN of the instance profile"
+}

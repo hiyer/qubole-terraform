@@ -197,7 +197,7 @@ resource "aws_iam_role_policy_attachment" "access_policy" {
 data "aws_iam_policy_document" "cross_account_policy" {
   statement {
     actions = ["iam:GetInstanceProfile"]
-    resources = ["arn:aws:iam::${var.account_id}:instance-profile/${var.role_name}"]
+    resources = ["arn:aws:iam::${var.account_id}:instance-profile/${var.role_name}-profile"]
   }
  
   statement {
@@ -243,5 +243,10 @@ data "aws_iam_policy_document" "trust_policy" {
 resource "aws_iam_role" "qubole_role" {
   name = "${var.role_name}"
   assume_role_policy = "${data.aws_iam_policy_document.trust_policy.json}"
+}
+
+resource "aws_iam_instance_profile" "qubole_profile" {
+  name = "${var.role_name}-profile"
+  role = "${aws_iam_role.qubole_role.name}"
 }
 

@@ -14,7 +14,7 @@ module "iam_policies" {
 
 resource "aws_iam_role_policy_attachment" "access_policy" {
   role = "${aws_iam_role.qubole_role.name}"
-  policy_arn = "${module.iam_policies.access_policy_arn}"
+  policy_arn = "${module.iam_policies.ec2_policy_arn}"
 }
 
 data "aws_iam_policy_document" "instance_profile_policy" {

@@ -2,7 +2,7 @@ provider "aws" {
   region = "${var.region}"
 }
 
-data "aws_iam_policy_document" "qubole_policy" {
+data "aws_iam_policy_document" "common_ec2_policy" {
   statement {
     sid = "NonResourceBasedPermissions",
     actions = [
@@ -114,9 +114,9 @@ data "aws_iam_policy_document" "qubole_policy" {
   }
 }
 
-resource "aws_iam_policy" "access_policy" {
+resource "aws_iam_policy" "common_ec2_policy" {
   name = "${var.name_prefix}-access-policy"
-  policy = "${data.aws_iam_policy_document.qubole_policy.json}"
+  policy = "${data.aws_iam_policy_document.common_ec2_policy.json}"
 }
 
 data "aws_iam_policy_document" "s3_policy" {

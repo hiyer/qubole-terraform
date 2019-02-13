@@ -17,7 +17,7 @@ variable "vpc_id" {
 variable "user_name" {
   type = "string"
   description = "User name"
-  default = "Qubole-access-user"
+  default = "Qubole-user"
 }
 
 variable "s3location" {

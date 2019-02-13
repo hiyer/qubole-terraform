@@ -22,7 +22,7 @@ module "iam_policies" {
 
 resource "aws_iam_user_policy_attachment" "access_policy" {
   user = "${aws_iam_user.qubole_user.name}"
-  policy_arn = "${module.iam_policies.access_policy_arn}"
+  policy_arn = "${module.iam_policies.ec2_policy_arn}"
 }
 
 resource "aws_iam_user_policy_attachment" "s3_policy" {
@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "instance_policy" {
   statement {
     sid = "AllowInstanceActions"
     actions = [
-      "ec2:StartInstances"
+      "ec2:StartInstances",
       "ec2:StopInstances",
       "ec2:ModifyInstanceAttribute",
       "ec2:TerminateInstances",

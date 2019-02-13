@@ -14,10 +14,10 @@ variable "vpc_id" {
   description = "VPC to restrict the compute resources to"
 }
 
-variable "role_name" {
+variable "user_name" {
   type = "string"
-  description = "Role name"
-  default = "Qubole-access-role"
+  description = "User name"
+  default = "Qubole-access-user"
 }
 
 variable "s3location" {
@@ -25,17 +25,17 @@ variable "s3location" {
   description = "S3 location to save logs, outputs, etc"
 }
 
-variable "qubole_account_id" {
-  type = "string"
-  description = "Qubole Trusted Account Id"
+output "user_name" {
+  value = "${aws_iam_user.qubole_user.name}"
+  description = "User name"
 }
 
-variable "qubole_external_ids" {
-  type = "list"
-  description = "Qubole External Id(s)"
+output "access_key_id" {
+  value = "${aws_iam_access_key.qubole_user.id}"
+  description = "Access Key Id"
 }
 
-output "role_arn" {
-  value = "${aws_iam_role.qubole_role.arn}"
-  description = "ARN of the role"
+output "secret_access_key" {
+  value = "${aws_iam_access_key.qubole_user.secret}"
+  description = "Secret Access Key"
 }

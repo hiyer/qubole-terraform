@@ -2,6 +2,14 @@ provider "aws" {
   region = "${var.region}"
 }
 
+resource "aws_iam_user" "qubole_user" {
+  name = "${var.user_name}"
+}
+
+resource "aws_iam_access_key" "qubole_user" {
+  user = "${aws_iam_user.qubole_user.name}"
+}
+
 data "aws_iam_policy_document" "qubole_policy" {
   statement {
     sid = "NonResourceBasedPermissions",
@@ -30,6 +38,7 @@ data "aws_iam_policy_document" "qubole_policy" {
   statement {
     sid = "AllowInstanceActions"
     actions = [
+      "ec2:RunInstances",
       "ec2:StartInstances",
       "ec2:StopInstances",
       "ec2:ModifyInstanceAttribute",
@@ -40,31 +49,9 @@ data "aws_iam_policy_document" "qubole_policy" {
       "ec2:DeleteTags"
     ]
     resources = [
-      "arn:aws:ec2:${var.region}:${var.account_id}:instance/*"
+      "*"
     ]
-    condition {
-      test = "StringEquals"
-      variable = "ec2:InstanceProfile"
-      values = ["arn:aws:iam::${var.account_id}:instance-profile/${aws_iam_role.qubole_role.name}"]
-      }
-    }
-
-    statement {
-      sid = "RunInstanceWithRole"
-      actions = [
-        "ec2:RunInstances",
-        "ec2:CreateTags",
-        "ec2:DeleteTags"
-      ]
-      resources = [
-        "arn:aws:ec2:${var.region}:${var.account_id}:instance/*"
-      ]
-      condition {
-        test = "StringEquals"
-        variable = "ec2:InstanceProfile"
-        values = ["arn:aws:iam::${var.account_id}:instance-profile/${aws_iam_role.qubole_role.name}"]
-      }
-    }
+  }
 
   statement {
     sid = "RunInstanceInSubnet"
@@ -144,7 +131,7 @@ data "aws_iam_policy_document" "qubole_policy" {
     ]
     condition {
       test = "StringLike"
-      variable =  "iam:AWSServiceName"
+      variable = "iam:AWSServiceName"
       values = [
           "spot.amazonaws.com",
           "spotfleet.amazonaws.com"
@@ -184,64 +171,11 @@ data "aws_iam_policy_document" "qubole_policy" {
 }
 
 resource "aws_iam_policy" "access_policy" {
-  name = "${var.role_name}-access-policy"
+  name = "${var.user_name}-access-policy"
   policy = "${data.aws_iam_policy_document.qubole_policy.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "access_policy" {
-  role = "${aws_iam_role.qubole_role.name}"
+resource "aws_iam_user_policy_attachment" "access_policy" {
+  user = "${aws_iam_user.qubole_user.name}"
   policy_arn = "${aws_iam_policy.access_policy.arn}"
 }
-
-
-data "aws_iam_policy_document" "cross_account_policy" {
-  statement {
-    actions = ["iam:GetInstanceProfile"]
-    resources = ["arn:aws:iam::${var.account_id}:instance-profile/${var.role_name}"]
-  }
- 
-  statement {
-    actions = ["iam:PassRole"]
-    resources = ["arn:aws:iam::${var.account_id}:role/${var.role_name}"]
-  }
-}
-
-resource "aws_iam_policy" "cross_account_policy" {
-  name = "${var.role_name}-cross-account-policy"
-  policy = "${data.aws_iam_policy_document.cross_account_policy.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "cross_account_policy" {
-  role = "${aws_iam_role.qubole_role.name}"
-  policy_arn = "${aws_iam_policy.cross_account_policy.arn}"
-}
-
-data "aws_iam_policy_document" "trust_policy" {
-  statement {
-    principals {
-      type = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-    actions = ["sts:AssumeRole"]
-  }
-  statement {
-    principals {
-      type = "AWS"
-      identifiers = ["arn:aws:iam::${var.qubole_account_id}:root"]
-    }
-    actions = ["sts:AssumeRole"]
-    condition {
-      test = "StringEquals"
-      variable = "sts:ExternalId"
-      values = [
-        "${var.qubole_external_ids}"
-      ]
-    }
-  }
-}
-
-resource "aws_iam_role" "qubole_role" {
-  name = "${var.role_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.trust_policy.json}"
-}
-

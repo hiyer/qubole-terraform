@@ -8,6 +8,7 @@ data "aws_availability_zones" "all" {
 
 locals {
   newbits = "${ceil(log(var.num_pvt_subnets + 1, 2))}"
+  sorted_azs = "${sort(data.aws_availability_zones.all.names)}"
 }
 
 resource "aws_network_acl" "private_subnet" {
@@ -89,10 +90,10 @@ resource "aws_network_acl_rule" "https_in" {
 resource "aws_subnet" "private_subnet" {
   count = "${var.num_pvt_subnets}"
   vpc_id = "${var.vpc_id}"
-  availability_zone = "${element(data.aws_availability_zones.all.names, count.index)}"
+  availability_zone = "${element(local.sorted_azs, count.index)}"
   cidr_block = "${var.subnet_cidr != "" && var.num_pvt_subnets == 1 ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index + 1)}"
   tags = "${merge(
-          map("Name", "${var.prefix}-private-subnet-${element(data.aws_availability_zones.all.names, count.index)}"),
+          map("Name", "${var.prefix}-private-subnet-${element(local.sorted_azs, count.index)}"),
           "${var.tags}"
         )}"
 }

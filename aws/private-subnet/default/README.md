@@ -9,6 +9,7 @@ The clusters reside in the private subnet, and there is a bastion host in the pu
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | aws\_key\_name | Key Pair for the bastion node | string | n/a | yes |
+| bastion\_node\_instance\_type | Instance type for bastion node | string | `"t3.small"` | no |
 | cidr\_block | CIDR block for the VPC | string | `"10.0.0.0/16"` | no |
 | num\_pvt\_subnets | Number of private subnets to create for cluster nodes. Do not specify private_subnet_cidr if using multiple subnets | string | `"1"` | no |
 | prefix | Prefix to apply for name tags | string | n/a | yes |

@@ -10,6 +10,7 @@ NB: this is a sample configuration that does not work with Qubole yet. Please ge
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | aws\_key\_name | Key Pair to use for the bastion node | string | n/a | yes |
+| bastion\_node\_instance\_type | Instance type for bastion node | string | `"t3.small"` | no |
 | cidr\_block | CIDR block for the VPC | string | `"10.0.0.0/16"` | no |
 | num\_pvt\_subnets | Number of private subnets to create for cluster nodes. | string | `"1"` | no |
 | prefix | Prefix to apply for name tags | string | n/a | yes |

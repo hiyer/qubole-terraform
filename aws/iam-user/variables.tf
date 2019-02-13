@@ -1,6 +1,6 @@
 variable "region" {
   type = "string"
-  description = "Region to create the role/policy in"
+  description = "Region of the vpc where compute resources will be provisioned"
   default = "us-west-2"
 }
 

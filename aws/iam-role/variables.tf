@@ -1,6 +1,6 @@
 variable "region" {
   type = "string"
-  description = "Region to create the role/policy in"
+  description = "Region of the vpc where compute resources will be provisioned"
   default = "us-west-2"
 }
 
@@ -17,7 +17,7 @@ variable "vpc_id" {
 variable "role_name" {
   type = "string"
   description = "Role name"
-  default = "Qubole-access-role"
+  default = "Qubole-role"
 }
 
 variable "s3location" {

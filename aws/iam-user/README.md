@@ -7,9 +7,9 @@ This template creates an IAM user and associated policies for use with Qubole cl
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | account\_id | Account id | string | n/a | yes |
-| region | Region to create the role/policy in | string | `"us-west-2"` | no |
+| region | Region of the vpc where compute resources will be provisioned | string | `"us-west-2"` | no |
 | s3location | S3 location to save logs, outputs, etc | string | n/a | yes |
-| user\_name | User name | string | `"Qubole-access-user"` | no |
+| user\_name | User name | string | `"Qubole-user"` | no |
 | vpc\_id | VPC to restrict the compute resources to | string | n/a | yes |
 
 ## Outputs

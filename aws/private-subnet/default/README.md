@@ -25,7 +25,7 @@ The clusters reside in the private subnet, and there is a bastion host in the pu
 | Name | Description |
 |------|-------------|
 | bastion\_ip | IP address of the bastion node |
-| private\_subnet\_id | Private subnet id |
+| private\_subnet\_id | Private subnet id(s) |
 | public\_subnet\_id | Public subnet id |
 | vpc\_id | VPC Id |
 

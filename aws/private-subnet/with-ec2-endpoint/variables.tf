@@ -71,7 +71,7 @@ output "vpc_id" {
 
 output "private_subnet_id" {
   value = "${module.private_subnet.subnet_ids}"
-  description = "Private subnet Id"
+  description = "Private subnet Id(s)"
 }
 
 output "public_subnet_id" {

@@ -27,7 +27,7 @@ NB: this is a sample configuration that does not work with Qubole yet. Please ge
 | Name | Description |
 |------|-------------|
 | bastion\_ip | IP address of the bastion node |
-| private\_subnet\_id | Private subnet Id |
+| private\_subnet\_id | Private subnet Id(s) |
 | public\_subnet\_id | Public subnet Id |
 | vpc\_endpoint | VPC EC2 Endpoint |
 | vpc\_id | VPC Id |

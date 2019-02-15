@@ -7,7 +7,8 @@ data "aws_availability_zones" "all" {
 }
 
 locals {
-  newbits = "${ceil(log(var.num_subnets, 2))}"
+  num_subnets = "${min(length(data.aws_availability_zones.all.names), var.num_subnets)}"
+  newbits = "${ceil(log(local.num_subnets, 2))}"
   sorted_azs = "${sort(data.aws_availability_zones.all.names)}"
 }
 
@@ -118,11 +119,11 @@ resource "aws_route_table" "public_subnet" {
 
 # Public subnet
 resource "aws_subnet" "public_subnet" {
-    count = "${var.num_subnets}"
+    count = "${local.num_subnets}"
 
     vpc_id = "${var.vpc_id}"
     availability_zone = "${element(local.sorted_azs, count.index)}"
-    cidr_block = "${var.subnet_cidr != "" && var.num_subnets == 1 ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index)}"
+    cidr_block = "${var.subnet_cidr != "" && local.num_subnets == 1 ? var.subnet_cidr : cidrsubnet(data.aws_vpc.default.cidr_block, local.newbits, count.index)}"
     tags = "${merge(
             map("Name", "${var.prefix}-public-subnet-${element(local.sorted_azs, count.index)}"),
             "${var.tags}"
@@ -131,7 +132,7 @@ resource "aws_subnet" "public_subnet" {
 
 # Route table association
 resource "aws_route_table_association" "public_subnet" {
-    count = "${var.num_subnets}"
+    count = "${local.num_subnets}"
     subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
     route_table_id = "${aws_route_table.public_subnet.id}"
 }

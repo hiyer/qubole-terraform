@@ -19,7 +19,7 @@ data "aws_availability_zones" "all" {
 }
 
 locals {
-  num_pvt_subnets = "${var.num_pvt_subnets == 1 ? 1 : min(length(data.aws_availability_zones.all.names), var.num_pvt_subnets)}"
+  num_pvt_subnets = "${min(length(data.aws_availability_zones.all.names), var.num_pvt_subnets)}"
   num_subnets = "${local.num_pvt_subnets + 1}"  # One public subnet as well
   newbits = "${ceil(log(local.num_subnets, 2))}"
 }

@@ -3,6 +3,8 @@ provider "aws" {
 }
 
 data "aws_iam_policy_document" "common_ec2_policy" {
+  # These permissions don't have any associated resources, or are
+  # required on multiple resources and hence collated here
   statement {
     sid = "NonResourceBasedPermissions",
     actions = [
@@ -10,12 +12,11 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "ec2:DisassociateAddress",
       "ec2:ImportKeyPair",
       "ec2:RequestSpotInstances",
+      # SpotFleet permissions are required for heterogeneous clusters
       "ec2:RequestSpotFleet",
       "ec2:ModifySpotFleetRequest",
       "ec2:CancelSpotFleetRequests",
       "ec2:CancelSpotInstanceRequests",
-      "ec2:CreateSpotDatafeedSubscription",
-      "ec2:DeleteSpotDatafeedSubscription",
       "ec2:Describe*",
       "ec2:CreateKeyPair",
       "ec2:CreateSecurityGroup",
@@ -27,6 +28,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
     ]
   }
 
+  # Permit bringing up instances in subnets of a specific VPC only
   statement {
     sid = "RunInstanceInSubnet"
     actions = [
@@ -43,7 +45,8 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       values = ["arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"]
     }
   }
-    
+  
+  # Permissions required on various resources to bring up an instance  
   statement {
     sid = "RunInstanceResourcePermissions"
     actions = [
@@ -58,7 +61,9 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "arn:aws:ec2:${var.region}:${var.account_id}:security-group/*"
     ]
   }
-    
+  
+  # Permissions required on the security group that Qubole
+  # creates for each cluster  
   statement {
     sid = "SecurityGroupActions"
     actions = [
@@ -80,6 +85,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
     }
   }
 
+  # Required for EBS-based storage upscaling
   statement {
     sid = "CreateAndDeleteVolumeActions"
     actions = [
@@ -93,6 +99,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
     ]
   }
   
+  # Required for heterogeneous clusters
   statement {
     sid = "SpotFleet"
     actions = [

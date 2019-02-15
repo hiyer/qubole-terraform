@@ -50,7 +50,7 @@ variable "num_pvt_subnets" {
 
 variable "whitelist_outgoing" {
   default = ""
-  description = "Public IP to whitelist outgoing traffic to."
+  description = "Public IP to whitelist outgoing traffic to. If not specified, no outgoing traffic is allowed from the private subnet except to s3 and ec2 via the respective vpc endpoints."
 }
 
 variable "bastion_node_instance_type" {

@@ -20,7 +20,7 @@ NB: this is a sample configuration that does not work with Qubole yet. Please ge
 | ssh\_public\_key | Public key to use for bastion node. This is the account key in cluster UI | string | n/a | yes |
 | tags | Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources. | map | `<map>` | no |
 | whitelist\_ip | List of IPs to whitelist SSH from | list | n/a | yes |
-| whitelist\_outgoing | Public IP to whitelist outgoing traffic to. | string | `""` | no |
+| whitelist\_outgoing | Public IP to whitelist outgoing traffic to. If not specified, no outgoing traffic is allowed from the private subnet except to s3 and ec2 via the respective vpc endpoints. | string | `""` | no |
 
 ## Outputs
 

@@ -38,6 +38,7 @@ data "aws_iam_policy_document" "lambda_role" {
     sid = "LogToCloudwatch"
     actions = [
       "logs:CreateLogStream",
+      "logs:CreateLogGroup",
       "logs:PutLogEvents"
     ]
     resources = [ "arn:aws:logs:*:*:*" ]
@@ -61,6 +62,7 @@ data "aws_iam_policy_document" "automation_assume_role" {
         "ec2:DescribeImages",
         "ec2:DescribeTags",
         "ec2:CreateTags",
+        "ec2:CopyImage",
         "ec2:CreateImage"
     ]
     resources = [ "*" ]

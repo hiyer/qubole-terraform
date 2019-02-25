@@ -2,6 +2,7 @@ import boto3
 import json
 import time
 import sys
+import os
 
 import logging
 logger = logging.getLogger()
@@ -16,7 +17,7 @@ def lambda_handler(event, context):
         # logger.info(message)
         
         response = ssm.start_automation_execution(
-            DocumentName='QBL-CreateEncryptedCopyofAMI',
+            DocumentName=os.environ["AUTOMATION_DOCUMENT_NAME"],
             Parameters={
                 "SourceImageId": [ message["MessageAttributes"]["ami-id"]["Value"] ],
                 "SourceImageRegion": [ message["MessageAttributes"]["ami-region"]["Value"] ]
@@ -31,12 +32,12 @@ def lambda_handler(event, context):
         }
 
     executionId = response["AutomationExecutionId"]
-    response = ssm.get_automation_execution(AutomationExecutionId=executionId)
-    execution = response["AutomationExecution"]
-    logger.info(execution)
     
     for i in xrange(100):
         try:
+            response = ssm.get_automation_execution(AutomationExecutionId=executionId)
+            execution = response["AutomationExecution"]
+            # logger.info(execution)
             outputs = execution["StepExecutions"][0]["Outputs"]
             new_ami_id = outputs['ImageId'][0]
             break

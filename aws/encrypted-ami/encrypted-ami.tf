@@ -104,7 +104,10 @@ resource "aws_iam_role" "automation_assume_role" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "ec2.amazonaws.com"
+        "Service": [
+          "ec2.amazonaws.com",
+          "ssm.amazonaws.com"
+        ]
       },
       "Effect": "Allow",
       "Sid": ""

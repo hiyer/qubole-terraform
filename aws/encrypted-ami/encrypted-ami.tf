@@ -73,15 +73,19 @@ locals {
   zip_file_name = "copy-ami.zip"
 }
 
+data "external" "deploy_document" {
+  program = ["bash", "zip_file.sh"]
+}
+
 resource "aws_lambda_function" "copy_ami_lambda" {
-  filename = "${local.zip_file_name}"
+  filename = "${data.external.deploy_document.result.deploydoc}"
   function_name = "${var.prefix}-copy-ami-function"
   handler = "lambda_function.lambda_handler"
   role = "${aws_iam_role.lambda_role.arn}"
   description = "Creates encrypted copy of Qubole AMI"
   runtime = "python2.7"
   timeout = 30
-  source_code_hash = "${base64sha256(file(local.zip_file_name))}"
+  source_code_hash = "${base64sha256(file(data.external.deploy_document.result.deploydoc))}"
   environment {
     variables = {
       AUTOMATION_DOCUMENT_NAME = "${aws_ssm_document.automation_document.name}"

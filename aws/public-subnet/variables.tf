@@ -4,7 +4,7 @@ variable "cidr_block" {
 }
 
 variable "prefix" {
-  description = "Prefix to be used for 'name' tags. e.g. the vpc would be named <prefix>-vpc"
+  description = "Prefix to be used for 'name' tags. e.g. the vpc would be named _prefix_-vpc"
 }
 
 variable "tags" {

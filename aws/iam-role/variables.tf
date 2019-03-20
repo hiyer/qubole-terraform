@@ -25,9 +25,9 @@ variable "s3location" {
   description = "S3 location to save logs, outputs, etc"
 }
 
-variable "qubole_account_id" {
-  type = "string"
-  description = "Qubole Trusted Account Id"
+variable "qubole_account_ids" {
+  type = "list"
+  description = "Qubole Trusted Account Id(s)"
 }
 
 variable "qubole_external_ids" {

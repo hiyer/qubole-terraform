@@ -59,7 +59,7 @@ resource "aws_security_group" "bastion_node" {
 # Bastion Instance
 resource "aws_instance" "bastion_node" {
     ami = "${data.aws_ami.amzn_linux.id}"
-    instance_type = "t3.small"
+    instance_type = "${var.instance_type}"
     key_name = "${var.aws_key_name}"
     vpc_security_group_ids = ["${aws_security_group.bastion_node.id}"]
     subnet_id = "${var.public_subnet_id}"

@@ -3,7 +3,7 @@ data "aws_vpc" "default" {
 }
 
 data "aws_availability_zones" "all" {
-  
+
 }
 
 locals {
@@ -11,77 +11,15 @@ locals {
   sorted_azs = "${sort(data.aws_availability_zones.all.names)}"
 }
 
-resource "aws_network_acl" "private_subnet" {
+module "network_acl" {
+  source = "../network_acl"
+
   vpc_id = "${var.vpc_id}"
+  tags = "${var.tags}"
+  prefix = "${var.prefix}"
+  whitelist_outgoing = "${var.whitelist_outgoing}"
+  allow_outgoing_http = "1"
   subnet_ids = ["${aws_subnet.private_subnet.*.id}"]
-
-  tags = "${merge(
-            map("Name", "${var.prefix}-private-subnet-acl"),
-            "${var.tags}"
-          )}"
-}
-
-# VPC in
-resource "aws_network_acl_rule" "vpc_in" {
-  network_acl_id = "${aws_network_acl.private_subnet.id}"
-  egress = false
-  protocol   = "tcp"
-  rule_number    = 101
-  rule_action     = "allow"
-  cidr_block = "${data.aws_vpc.default.cidr_block}"
-  from_port  = 0
-  to_port    = 65535
-}
-
-# VPC out
-resource "aws_network_acl_rule" "vpc_out" {
-  network_acl_id = "${aws_network_acl.private_subnet.id}"
-  egress = true
-  protocol   = "tcp"
-  rule_number    = 101
-  rule_action     = "allow"
-  cidr_block = "${data.aws_vpc.default.cidr_block}"
-  from_port  = 0
-  to_port    = 65535
-}
-
-# HTTP out
-resource "aws_network_acl_rule" "http_out" {
-  count = "${var.whitelist_outgoing != "" ? 1 : 0}"
-  network_acl_id = "${aws_network_acl.private_subnet.id}"
-  egress = true
-  protocol   = "tcp"
-  rule_number    = 201
-  rule_action     = "allow"
-  cidr_block = "${var.whitelist_outgoing}"
-  from_port  = 80
-  to_port    = 80
-}
-
-# HTTPs out
-resource "aws_network_acl_rule" "https_out" {
-  count = "${var.whitelist_outgoing != "" ? 1 : 0}"
-  network_acl_id = "${aws_network_acl.private_subnet.id}"
-  egress = true
-  protocol   = "tcp"
-  rule_number    = 301
-  rule_action     = "allow"
-  cidr_block = "${var.whitelist_outgoing}"
-  from_port  = 443
-  to_port    = 443
-}
-
-# HTTP(s) response
-resource "aws_network_acl_rule" "https_in" {
-  count = "${var.whitelist_outgoing != "" ? 1 : 0}"
-  network_acl_id = "${aws_network_acl.private_subnet.id}"
-  egress = false
-  protocol   = "tcp"
-  rule_number    = 201
-  rule_action     = "allow"
-  cidr_block = "${var.whitelist_outgoing}"
-  from_port  = 1024
-  to_port    = 65535
 }
 
 /*

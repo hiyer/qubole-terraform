@@ -27,6 +27,10 @@ module "network_acl" {
 # Internet gateway for the public subnet
 resource "aws_internet_gateway" "public_subnet" {
     vpc_id = "${var.vpc_id}"
+    tags = "${merge(
+            map("Name", "${var.prefix}-internet-gateway"),
+            "${var.tags}"
+          )}"
 }
 
 # Route table for the public subnet

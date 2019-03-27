@@ -10,8 +10,8 @@ resource "aws_iam_access_key" "qubole_user" {
   user = "${aws_iam_user.qubole_user.name}"
 }
 
-module "iam_policies" {
-  source = "../modules/iam_policies"
+module "iam" {
+  source = "../modules/iam"
 
   region = "${var.region}"
   account_id = "${var.account_id}"
@@ -22,12 +22,12 @@ module "iam_policies" {
 
 resource "aws_iam_user_policy_attachment" "access_policy" {
   user = "${aws_iam_user.qubole_user.name}"
-  policy_arn = "${module.iam_policies.ec2_policy_arn}"
+  policy_arn = "${module.iam.ec2_policy_arn}"
 }
 
 resource "aws_iam_user_policy_attachment" "s3_policy" {
   user = "${aws_iam_user.qubole_user.name}"
-  policy_arn = "${module.iam_policies.s3_policy_arn}"
+  policy_arn = "${module.iam.s3_policy_arn}"
 }
 
 data "aws_iam_policy_document" "instance_policy" {

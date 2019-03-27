@@ -2,8 +2,8 @@ provider "aws" {
   region = "${var.region}"
 }
 
-module "iam_policies" {
-  source = "../modules/iam_policies"
+module "iam" {
+  source = "../modules/iam"
 
   region = "${var.region}"
   account_id = "${var.account_id}"
@@ -14,7 +14,7 @@ module "iam_policies" {
 
 resource "aws_iam_role_policy_attachment" "access_policy" {
   role = "${aws_iam_role.qubole_role.name}"
-  policy_arn = "${module.iam_policies.ec2_policy_arn}"
+  policy_arn = "${module.iam.ec2_policy_arn}"
 }
 
 data "aws_iam_policy_document" "instance_profile_policy" {
@@ -70,7 +70,7 @@ resource "aws_iam_role_policy_attachment" "instance_profile_policy" {
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
   role = "${aws_iam_role.qubole_role.name}"
-  policy_arn = "${module.iam_policies.s3_policy_arn}"
+  policy_arn = "${module.iam.s3_policy_arn}"
 }
 
 data "aws_iam_policy_document" "cross_account_policy" {
@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "cross_account_policy" {
     actions = ["iam:GetInstanceProfile"]
     resources = ["arn:aws:iam::${var.account_id}:instance-profile/${var.role_name}-profile"]
   }
- 
+
   statement {
     actions = ["iam:PassRole"]
     resources = ["arn:aws:iam::${var.account_id}:role/${var.role_name}"]

@@ -125,6 +125,41 @@ data "aws_iam_policy_document" "spot_fleet_assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "spot_fleet_service_role" {
+  statement {
+    actions = [
+        "ec2:DescribeImages",
+        "ec2:DescribeSubnets",
+        "ec2:RequestSpotInstances",
+        "ec2:TerminateInstances",
+        "ec2:DescribeInstanceStatus",
+        "ec2:CreateTags"
+    ]
+    resources = [
+        "*"
+    ]
+  }
+  statement {
+    actions = ["iam:PassRole"]
+    condition {
+      test = "StringEquals"
+      variable = "iam:PassedToService"
+      values = [
+                  "ec2.amazonaws.com",
+                  "ec2.amazonaws.com.cn"
+              ]
+    }
+    resources = [
+        "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "spot_fleet_service_role" {
+  name = "${var.name_prefix}-spot-fleet-service-policy"
+  policy = "${data.aws_iam_policy_document.spot_fleet_service_role.json}"
+}
+
 resource "aws_iam_role" "spot_fleet_role" {
   name = "qubole-ec2-spot-fleet-role"
   assume_role_policy = "${data.aws_iam_policy_document.spot_fleet_assume_role.json}"
@@ -132,7 +167,7 @@ resource "aws_iam_role" "spot_fleet_role" {
 
 resource "aws_iam_role_policy_attachment" "name" {
   role = "${aws_iam_role.spot_fleet_role.name}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+  policy_arn = "${aws_iam_policy.spot_fleet_service_role.arn}"
 }
 
 resource "aws_iam_service_linked_role" "spot" {

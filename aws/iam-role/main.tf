@@ -28,24 +28,8 @@ data "aws_iam_policy_document" "instance_profile_policy" {
       "ec2:AttachVolume",
       "ec2:DetachVolume",
       "ec2:CreateTags",
-      "ec2:DeleteTags"
-    ]
-    resources = [
-      "arn:aws:ec2:${var.region}:${var.account_id}:instance/*"
-    ]
-    condition {
-      test = "StringEquals"
-      variable = "ec2:InstanceProfile"
-      values = ["arn:aws:iam::${var.account_id}:instance-profile/${aws_iam_role.qubole_role.name}"]
-      }
-    }
-
-  statement {
-    sid = "RunInstanceWithRole"
-    actions = [
-      "ec2:RunInstances",
-      "ec2:CreateTags",
-      "ec2:DeleteTags"
+      "ec2:DeleteTags",
+      "ec2:RunInstances"
     ]
     resources = [
       "arn:aws:ec2:${var.region}:${var.account_id}:instance/*"

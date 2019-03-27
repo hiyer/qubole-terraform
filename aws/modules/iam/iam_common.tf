@@ -20,6 +20,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "ec2:Describe*",
       "ec2:CreateKeyPair",
       "ec2:CreateSecurityGroup",
+      "ec2:ModifySecurityGroup",
       "ec2:CreateTags",
       "sts:DecodeAuthorizationMessage"
     ]
@@ -45,8 +46,8 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       values = ["arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"]
     }
   }
-  
-  # Permissions required on various resources to bring up an instance  
+
+  # Permissions required on various resources to bring up an instance
   statement {
     sid = "RunInstanceResourcePermissions"
     actions = [
@@ -61,9 +62,9 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "arn:aws:ec2:${var.region}:${var.account_id}:security-group/*"
     ]
   }
-  
+
   # Permissions required on the security group that Qubole
-  # creates for each cluster  
+  # creates for each cluster
   statement {
     sid = "SecurityGroupActions"
     actions = [
@@ -98,27 +99,34 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "arn:aws:ec2:${var.region}:${var.account_id}:volume/*"
     ]
   }
-  
-  # Required for heterogeneous clusters
+}
+
+data "aws_iam_policy_document" "spot_fleet_assume_role" {
   statement {
-    sid = "SpotFleet"
-    actions = [
-      "iam:CreateServiceLinkedRole",
-      "iam:PutRolePolicy"
-    ],
-    resources = [
-      "arn:aws:iam::*:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot",
-      "arn:aws:iam::*:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet"
-    ]
-    condition {
-      test = "StringLike"
-      variable =  "iam:AWSServiceName"
-      values = [
-          "spot.amazonaws.com",
-          "spotfleet.amazonaws.com"
-        ]
+    sid = "SpotFleetPolicy"
+    principals {
+      type = "Service"
+      identifiers = ["spotfleet.amazonaws.com"]
     }
   }
+}
+
+resource "aws_iam_role" "spot_fleet_role" {
+  name = "qubole-ec2-spot-fleet-role"
+  assume_role_policy = "${data.aws_iam_policy_document.spot_fleet_assume_role.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "name" {
+  role = "${aws_iam_role.spot_fleet_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+}
+
+resource "aws_iam_service_linked_role" "spot" {
+  aws_service_name = "spot.amazonaws.com"
+}
+
+resource "aws_iam_service_linked_role" "spotfleet" {
+  aws_service_name = "spotfleet.amazonaws.com"
 }
 
 resource "aws_iam_policy" "common_ec2_policy" {

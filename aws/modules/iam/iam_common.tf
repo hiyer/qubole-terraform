@@ -99,6 +99,19 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "arn:aws:ec2:${var.region}:${var.account_id}:volume/*"
     ]
   }
+
+  # Required for heterogeneous clusters
+  statement {
+    sid = "GetRole"
+    actions = [
+      "iam:GetRole"
+    ]
+    resources = ["*"]
+    # Use below if you want to allow only for the spot fleet role
+    # resources = [
+    #   "arn:aws:iam::${var.account_id}:role/qubole-ec2-spot-fleet-role"
+    # ]
+  }
 }
 
 data "aws_iam_policy_document" "spot_fleet_assume_role" {

@@ -103,7 +103,8 @@ data "aws_iam_policy_document" "common_ec2_policy" {
 
 data "aws_iam_policy_document" "spot_fleet_assume_role" {
   statement {
-    sid = "SpotFleetPolicy"
+    sid = "SpotFleetAssumeRole"
+    actions = ["sts:AssumeRole"]
     principals {
       type = "Service"
       identifiers = ["spotfleet.amazonaws.com"]
@@ -123,10 +124,12 @@ resource "aws_iam_role_policy_attachment" "name" {
 
 resource "aws_iam_service_linked_role" "spot" {
   aws_service_name = "spot.amazonaws.com"
+  description = "Allows EC2 Spot to launch and manage spot instances."
 }
 
 resource "aws_iam_service_linked_role" "spotfleet" {
   aws_service_name = "spotfleet.amazonaws.com"
+  description =  "Default EC2 Spot Fleet Service Linked Role"
 }
 
 resource "aws_iam_policy" "common_ec2_policy" {

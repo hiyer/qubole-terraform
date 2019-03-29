@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "trust_policy" {
   statement {
     principals {
       type = "AWS"
-      identifiers = ["arn:aws:iam::${var.qubole_account_id}:root"]
+      identifiers = ["${formatlist("arn:aws:iam::%s:root", var.qubole_account_ids)}"]
     }
     actions = ["sts:AssumeRole"]
     condition {

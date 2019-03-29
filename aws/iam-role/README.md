@@ -7,7 +7,7 @@ This template creates an IAM role and associated policies for use with Qubole cl
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | account\_id | Account id | string | n/a | yes |
-| qubole\_account\_id | Qubole Trusted Account Id | string | n/a | yes |
+| qubole\_account\_ids | Qubole Account Id(s) | list | n/a | yes |
 | qubole\_external\_ids | Qubole External Id(s) | list | n/a | yes |
 | region | Region of the vpc where compute resources will be provisioned | string | `"us-west-2"` | no |
 | role\_name | Role name | string | `"Qubole-role"` | no |

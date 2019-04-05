@@ -73,13 +73,11 @@ resource "aws_instance" "bastion_node" {
                 #!/bin/bash
                 echo ${var.ssh_public_key} >> /home/ec2-user/.ssh/authorized_keys
                 echo ${var.ssh_public_key} >> /home/root/.ssh/authorized_keys
-                if grep -q "^GatewayPorts no" /etc/ssh/sshd_config; then
-                  sed -i 's/GatewayPorts no/GatewayPorts yes/' /etc/ssh/sshd_config
-                elif grep -q "^GatewayPorts yes" /etc/ssh/sshd_config; then
-                  echo "GatewayPorts already enabled."
-                else
-                  echo "GatewayPorts yes >> /etc/ssh/sshd_config"
-                fi
+                fields=(GatewayPorts AllowTcpForwarding)
+                for f in "${fields[@]}"; do
+                  sed -i "/$${f}/d" /etc/ssh/sshd_config
+                  echo "$${f} yes" >> /etc/ssh/sshd_config
+                done
                 systemctl restart ssh || /etc/init.d/sshd restart
                 EOF
 

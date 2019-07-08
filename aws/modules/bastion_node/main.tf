@@ -74,7 +74,7 @@ resource "aws_instance" "bastion_node" {
                 echo ${var.ssh_public_key} >> /home/ec2-user/.ssh/authorized_keys
                 echo ${var.ssh_public_key} >> /home/root/.ssh/authorized_keys
                 fields=(GatewayPorts AllowTcpForwarding)
-                for f in "${fields[@]}"; do
+                for f in "$${fields[@]}"; do
                   sed -i "/$${f}/d" /etc/ssh/sshd_config
                   echo "$${f} yes" >> /etc/ssh/sshd_config
                 done

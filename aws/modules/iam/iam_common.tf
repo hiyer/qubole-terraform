@@ -1,18 +1,18 @@
 provider "aws" {
-  region = "${var.region}"
+  region  = var.region
+  version = "~> 2.18.0"
 }
 
 data "aws_iam_policy_document" "common_ec2_policy" {
   # These permissions don't have any associated resources, or are
   # required on multiple resources and hence collated here
   statement {
-    sid = "NonResourceBasedPermissions",
+    sid = "NonResourceBasedPermissions"
     actions = [
       "ec2:AssociateAddress",
       "ec2:DisassociateAddress",
       "ec2:ImportKeyPair",
       "ec2:RequestSpotInstances",
-      # SpotFleet permissions are required for heterogeneous clusters
       "ec2:RequestSpotFleet",
       "ec2:ModifySpotFleetRequest",
       "ec2:CancelSpotFleetRequests",
@@ -22,10 +22,10 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "ec2:CreateSecurityGroup",
       "ec2:ModifySecurityGroup",
       "ec2:CreateTags",
-      "sts:DecodeAuthorizationMessage"
+      "sts:DecodeAuthorizationMessage",
     ]
     resources = [
-      "*"
+      "*",
     ]
   }
 
@@ -35,15 +35,15 @@ data "aws_iam_policy_document" "common_ec2_policy" {
     actions = [
       "ec2:RunInstances",
       "ec2:CreateTags",
-      "ec2:DeleteTags"
+      "ec2:DeleteTags",
     ]
     resources = [
-      "arn:aws:ec2:${var.region}:${var.account_id}:subnet/*"
+      "arn:aws:ec2:${var.region}:${var.account_id}:subnet/*",
     ]
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "ec2:vpc"
-      values = ["arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"]
+      values   = ["arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"]
     }
   }
 
@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
   statement {
     sid = "RunInstanceResourcePermissions"
     actions = [
-      "ec2:RunInstances"
+      "ec2:RunInstances",
     ]
     resources = [
       "arn:aws:ec2:${var.region}::image/*",
@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "arn:aws:ec2:${var.region}:${var.account_id}:volume/*",
       "arn:aws:ec2:${var.region}:${var.account_id}:network-interface/*",
       "arn:aws:ec2:${var.region}:${var.account_id}:key-pair/*",
-      "arn:aws:ec2:${var.region}:${var.account_id}:security-group/*"
+      "arn:aws:ec2:${var.region}:${var.account_id}:security-group/*",
     ]
   }
 
@@ -74,15 +74,15 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "ec2:RevokeSecurityGroupEgress",
       "ec2:DeleteSecurityGroup",
       "ec2:CreateTags",
-      "ec2:DeleteTags"
+      "ec2:DeleteTags",
     ]
     resources = [
-      "*"
+      "*",
     ]
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "ec2:vpc"
-      values = ["arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"]
+      values   = ["arn:aws:ec2:${var.region}:${var.account_id}:vpc/${var.vpc_id}"]
     }
   }
 
@@ -93,10 +93,10 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "ec2:CreateVolume",
       "ec2:DeleteVolume",
       "ec2:CreateTags",
-      "ec2:DeleteTags"
+      "ec2:DeleteTags",
     ]
     resources = [
-      "arn:aws:ec2:${var.region}:${var.account_id}:volume/*"
+      "arn:aws:ec2:${var.region}:${var.account_id}:volume/*",
     ]
   }
 
@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
   statement {
     sid = "GetRole"
     actions = [
-      "iam:GetRole"
+      "iam:GetRole",
     ]
     resources = ["*"]
     # Use below if you want to allow only for the spot fleet role
@@ -116,10 +116,10 @@ data "aws_iam_policy_document" "common_ec2_policy" {
 
 data "aws_iam_policy_document" "spot_fleet_assume_role" {
   statement {
-    sid = "SpotFleetAssumeRole"
+    sid     = "SpotFleetAssumeRole"
     actions = ["sts:AssumeRole"]
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["spotfleet.amazonaws.com"]
     }
   }
@@ -128,66 +128,66 @@ data "aws_iam_policy_document" "spot_fleet_assume_role" {
 data "aws_iam_policy_document" "spot_fleet_service_role" {
   statement {
     actions = [
-        "ec2:DescribeImages",
-        "ec2:DescribeSubnets",
-        "ec2:RequestSpotInstances",
-        "ec2:TerminateInstances",
-        "ec2:DescribeInstanceStatus",
-        "ec2:CreateTags"
+      "ec2:DescribeImages",
+      "ec2:DescribeSubnets",
+      "ec2:RequestSpotInstances",
+      "ec2:TerminateInstances",
+      "ec2:DescribeInstanceStatus",
+      "ec2:CreateTags",
     ]
     resources = [
-        "*"
+      "*",
     ]
   }
   statement {
     actions = ["iam:PassRole"]
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "iam:PassedToService"
       values = [
-                  "ec2.amazonaws.com",
-                  "ec2.amazonaws.com.cn"
-              ]
+        "ec2.amazonaws.com",
+        "ec2.amazonaws.com.cn",
+      ]
     }
     resources = [
-        "*"
+      "*",
     ]
   }
 }
 
 resource "aws_iam_policy" "spot_fleet_service_role" {
-  name = "${var.name_prefix}-spot-fleet-service-policy"
-  policy = "${data.aws_iam_policy_document.spot_fleet_service_role.json}"
+  name   = "${var.name_prefix}-spot-fleet-service-policy"
+  policy = data.aws_iam_policy_document.spot_fleet_service_role.json
 }
 
 resource "aws_iam_role" "spot_fleet_role" {
-  name = "qubole-ec2-spot-fleet-role"
-  assume_role_policy = "${data.aws_iam_policy_document.spot_fleet_assume_role.json}"
+  name               = "qubole-ec2-spot-fleet-role"
+  assume_role_policy = data.aws_iam_policy_document.spot_fleet_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "name" {
-  role = "${aws_iam_role.spot_fleet_role.name}"
-  policy_arn = "${aws_iam_policy.spot_fleet_service_role.arn}"
+  role       = aws_iam_role.spot_fleet_role.name
+  policy_arn = aws_iam_policy.spot_fleet_service_role.arn
 }
 
 resource "aws_iam_service_linked_role" "spot" {
   aws_service_name = "spot.amazonaws.com"
-  description = "Allows EC2 Spot to launch and manage spot instances."
+  description      = "Allows EC2 Spot to launch and manage spot instances."
 }
 
 resource "aws_iam_service_linked_role" "spotfleet" {
   aws_service_name = "spotfleet.amazonaws.com"
-  description =  "Default EC2 Spot Fleet Service Linked Role"
+  description      = "Default EC2 Spot Fleet Service Linked Role"
 }
 
 resource "aws_iam_policy" "common_ec2_policy" {
-  name = "${var.name_prefix}-access-policy"
-  policy = "${data.aws_iam_policy_document.common_ec2_policy.json}"
+  name   = "${var.name_prefix}-access-policy"
+  policy = data.aws_iam_policy_document.common_ec2_policy.json
 }
 
 data "aws_iam_policy_document" "s3_policy" {
   statement {
-    sid =  "DefaultLocationActions"
+    sid = "DefaultLocationActions"
     actions = [
       "s3:DeleteObject",
       "s3:GetObject",
@@ -196,28 +196,29 @@ data "aws_iam_policy_document" "s3_policy" {
       "s3:PutObjectAcl",
       "s3:GetBucketAcl",
       "s3:ListBucket",
-      "s3:GetBucketLocation"
+      "s3:GetBucketLocation",
     ]
     resources = [
       "arn:aws:s3:::${var.s3location}/*",
-      "arn:aws:s3:::${var.s3location}"
+      "arn:aws:s3:::${var.s3location}",
     ]
   }
 
   statement {
-    sid =  "ListBucketsAndOthers"
+    sid = "ListBucketsAndOthers"
     actions = [
       "s3:ListBucket",
       "s3:GetBucketLocation",
-      "s3:ListAllMyBuckets"
-    ],
+      "s3:ListAllMyBuckets",
+    ]
     resources = [
-      "*"
+      "*",
     ]
   }
 }
 
 resource "aws_iam_policy" "s3_policy" {
-  name = "${var.name_prefix}-s3-policy"
-  policy = "${data.aws_iam_policy_document.s3_policy.json}"
+  name   = "${var.name_prefix}-s3-policy"
+  policy = data.aws_iam_policy_document.s3_policy.json
 }
+

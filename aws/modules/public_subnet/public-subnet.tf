@@ -23,7 +23,7 @@ module "network_acl" {
   whitelist_outgoing  = "0.0.0.0/0"
   ssh_whitelist_ip    = var.whitelist_ip
   allow_outgoing_http = "1"
-  subnet_ids          = [aws_subnet.public_subnet.*.id]
+  subnet_ids          = aws_subnet.public_subnet.*.id
 }
 
 # Internet gateway for the public subnet

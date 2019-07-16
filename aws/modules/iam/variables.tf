@@ -18,8 +18,8 @@ variable "name_prefix" {
   description = "Prefix to apply to policy names"
 }
 
-variable "vpc_id" {
-  type        = string
+variable "vpc_ids" {
+  type        = list(map(string))
   description = "VPC to restrict compute resources to"
 }
 

@@ -9,8 +9,8 @@ variable "account_id" {
   description = "Account id"
 }
 
-variable "vpc_id" {
-  type        = string
+variable "vpc_ids" {
+  type        = list(map(string))
   description = "VPC to restrict the compute resources to"
 }
 

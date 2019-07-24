@@ -18,7 +18,7 @@ module "network_acl" {
   prefix              = var.prefix
   whitelist_outgoing  = var.whitelist_outgoing
   allow_outgoing_http = "1"
-  subnet_ids          = [aws_subnet.private_subnet.*.id]
+  subnet_ids          = aws_subnet.private_subnet.*.id
 }
 
 /*

@@ -2,7 +2,12 @@ data "aws_vpc" "default" {
   id = var.vpc_id
 }
 
+locals {
+  num_network_acls = var.use_network_acls == true ? 1 : 0
+}
+
 resource "aws_network_acl" "default" {
+  count = local.num_network_acls
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
@@ -16,8 +21,8 @@ resource "aws_network_acl" "default" {
 
 # SSH from Qubole
 resource "aws_network_acl_rule" "ssh_in" {
-  count          = length(var.ssh_whitelist_ip)
-  network_acl_id = aws_network_acl.default.id
+  count          = local.num_network_acls == 1 ? length(var.ssh_whitelist_ip) : 0
+  network_acl_id = aws_network_acl.default[0].id
   egress         = false
   protocol       = "tcp"
   rule_number    = count.index + 101
@@ -29,11 +34,11 @@ resource "aws_network_acl_rule" "ssh_in" {
 
 # Response to SSH
 resource "aws_network_acl_rule" "ssh_out" {
+  count          = local.num_network_acls == 1 ? length(var.ssh_whitelist_ip) : 0
   rule_number    = count.index + 101
-  network_acl_id = aws_network_acl.default.id
+  network_acl_id = aws_network_acl.default[0].id
   protocol       = "tcp"
   rule_action    = "allow"
-  count          = length(var.ssh_whitelist_ip)
   cidr_block     = element(var.ssh_whitelist_ip, count.index)
   from_port      = 1024
   to_port        = 65535
@@ -42,8 +47,8 @@ resource "aws_network_acl_rule" "ssh_out" {
 
 # HTTP out
 resource "aws_network_acl_rule" "http_out" {
-  count          = var.whitelist_outgoing != "" && var.allow_outgoing_http != "0" ? 1 : 0
-  network_acl_id = aws_network_acl.default.id
+  count          = var.whitelist_outgoing != "0.0.0.0/0" && var.allow_outgoing_http == true ? 1 : 0
+  network_acl_id = aws_network_acl.default[0].id
   egress         = true
   protocol       = "tcp"
   rule_number    = 201
@@ -55,8 +60,8 @@ resource "aws_network_acl_rule" "http_out" {
 
 # HTTPS out
 resource "aws_network_acl_rule" "https_out" {
-  count          = var.whitelist_outgoing != "" ? 1 : 0
-  network_acl_id = aws_network_acl.default.id
+  count          = var.whitelist_outgoing != "0.0.0.0/0" ? 1 : 0
+  network_acl_id = aws_network_acl.default[0].id
   protocol       = "tcp"
   rule_number    = 301
   rule_action    = "allow"
@@ -68,8 +73,8 @@ resource "aws_network_acl_rule" "https_out" {
 
 # HTTP(S) response
 resource "aws_network_acl_rule" "https_in" {
-  count          = var.whitelist_outgoing != "" ? 1 : 0
-  network_acl_id = aws_network_acl.default.id
+  count          = var.whitelist_outgoing != "0.0.0.0/0" ? 1 : 0
+  network_acl_id = aws_network_acl.default[0].id
   protocol       = "tcp"
   rule_number    = 201
   rule_action    = "allow"
@@ -81,7 +86,8 @@ resource "aws_network_acl_rule" "https_in" {
 
 # Outgoing traffic within VPC
 resource "aws_network_acl_rule" "vpc_out" {
-  network_acl_id = aws_network_acl.default.id
+  count = local.num_network_acls
+  network_acl_id = aws_network_acl.default[0].id
   protocol       = "tcp"
   rule_number    = 401
   rule_action    = "allow"
@@ -93,7 +99,8 @@ resource "aws_network_acl_rule" "vpc_out" {
 
 # Incoming traffic within VPC
 resource "aws_network_acl_rule" "vpc_in" {
-  network_acl_id = aws_network_acl.default.id
+  count = local.num_network_acls
+  network_acl_id = aws_network_acl.default[0].id
   protocol       = "tcp"
   rule_number    = 401
   rule_action    = "allow"

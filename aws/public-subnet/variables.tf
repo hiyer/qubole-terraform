@@ -34,6 +34,12 @@ variable "whitelist_ip" {
   description = "List of IPs to whitelist SSH from"
 }
 
+variable "use_network_acls" {
+  type        = bool
+  description = "Whether to use network ACLs in addition to security groups for access control"
+  default     = false
+}
+
 output "vpc_id" {
   value       = aws_vpc.default.id
   description = "Id of the VPC"

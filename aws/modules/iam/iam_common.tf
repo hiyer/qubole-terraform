@@ -1,8 +1,3 @@
-provider "aws" {
-  region  = var.region
-  version = "~> 2.18.0"
-}
-
 data "aws_iam_policy_document" "common_ec2_policy" {
   # These permissions don't have any associated resources, or are
   # required on multiple resources and hence collated here
@@ -20,7 +15,6 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "ec2:Describe*",
       "ec2:CreateKeyPair",
       "ec2:CreateSecurityGroup",
-      "ec2:ModifySecurityGroup",
       "ec2:CreateTags",
       "sts:DecodeAuthorizationMessage",
     ]
@@ -34,11 +28,11 @@ data "aws_iam_policy_document" "common_ec2_policy" {
     sid = "RunInstanceInSubnet"
     actions = [
       "ec2:RunInstances",
-      "ec2:CreateTags",
-      "ec2:DeleteTags",
     ]
     resources = [
       "arn:aws:ec2:${var.region}:${var.account_id}:subnet/*",
+      "arn:aws:ec2:${var.region}:${var.account_id}:network-interface/*",
+      "arn:aws:ec2:${var.region}:${var.account_id}:security-group/*"
     ]
     condition {
       test     = "StringEquals"
@@ -47,7 +41,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
                   for vpc in var.vpc_ids:
                   "arn:aws:ec2:${var.region}:${vpc.account_id}:vpc/${vpc.vpc_id}"
                  ]
-                   
+
     }
   }
 
@@ -61,9 +55,7 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "arn:aws:ec2:${var.region}::image/*",
       "arn:aws:ec2:${var.region}::snapshot/*",
       "arn:aws:ec2:${var.region}:${var.account_id}:volume/*",
-      "arn:aws:ec2:${var.region}:${var.account_id}:network-interface/*",
-      "arn:aws:ec2:${var.region}:${var.account_id}:key-pair/*",
-      "arn:aws:ec2:${var.region}:${var.account_id}:security-group/*",
+      "arn:aws:ec2:${var.region}:${var.account_id}:key-pair/*"
     ]
   }
 
@@ -163,7 +155,7 @@ data "aws_iam_policy_document" "spot_fleet_service_role" {
 }
 
 resource "aws_iam_policy" "spot_fleet_service_role" {
-  name   = "${var.name_prefix}-spot-fleet-service-policy"
+  name   = "qubole-ec2-spot-fleet-service-policy"
   policy = data.aws_iam_policy_document.spot_fleet_service_role.json
 }
 
@@ -177,15 +169,15 @@ resource "aws_iam_role_policy_attachment" "name" {
   policy_arn = aws_iam_policy.spot_fleet_service_role.arn
 }
 
-resource "aws_iam_service_linked_role" "spot" {
-  aws_service_name = "spot.amazonaws.com"
-  description      = "Allows EC2 Spot to launch and manage spot instances."
-}
-
-resource "aws_iam_service_linked_role" "spotfleet" {
-  aws_service_name = "spotfleet.amazonaws.com"
-  description      = "Default EC2 Spot Fleet Service Linked Role"
-}
+# resource "aws_iam_service_linked_role" "spot" {
+#   aws_service_name = "spot.amazonaws.com"
+#   description      = "Allows EC2 Spot to launch and manage spot instances."
+# }
+#
+# resource "aws_iam_service_linked_role" "spotfleet" {
+#   aws_service_name = "spotfleet.amazonaws.com"
+#   description      = "Default EC2 Spot Fleet Service Linked Role"
+# }
 
 resource "aws_iam_policy" "common_ec2_policy" {
   name   = "${var.name_prefix}-access-policy"

@@ -15,9 +15,9 @@ variable "whitelist_outgoing" {
 }
 
 variable "allow_outgoing_http" {
-  type        = string
+  type        = bool
   description = "Whether to allow outgoing HTTP requests"
-  default     = "0"
+  default     = false
 }
 
 variable "prefix" {
@@ -36,3 +36,7 @@ variable "tags" {
   default     = {}
 }
 
+variable "use_network_acls" {
+  type        = bool
+  description = "Whether to use Network ACLs. Included because terraform does not allow conditional inclusion of modules"
+}

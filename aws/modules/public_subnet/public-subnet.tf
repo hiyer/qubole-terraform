@@ -20,10 +20,11 @@ module "network_acl" {
   vpc_id              = var.vpc_id
   tags                = var.tags
   prefix              = var.prefix
-  whitelist_outgoing  = "0.0.0.0/0"
   ssh_whitelist_ip    = var.whitelist_ip
+  whitelist_outgoing  = "0.0.0.0/0"
   allow_outgoing_http = "1"
   subnet_ids          = aws_subnet.public_subnet.*.id
+  use_network_acls    = var.use_network_acls
 }
 
 # Internet gateway for the public subnet

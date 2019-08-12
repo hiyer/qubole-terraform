@@ -43,6 +43,7 @@ data "aws_iam_policy_document" "instance_policy" {
       "ec2:DetachVolume",
       "ec2:CreateTags",
       "ec2:DeleteTags",
+      "ec2:RunInstances"
     ]
     resources = [
       "arn:aws:ec2:${var.region}:${var.account_id}:instance/*",

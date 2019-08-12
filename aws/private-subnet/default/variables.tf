@@ -53,6 +53,12 @@ variable "bastion_node_instance_type" {
   default     = "t3.small"
 }
 
+variable "use_network_acls" {
+  type        = bool
+  description = "Whether to use network ACLs in addition to security groups for access control"
+  default     = false
+}
+
 output "bastion_ip" {
   value       = module.bastion_node.public_ip
   description = "IP address of the bastion node"

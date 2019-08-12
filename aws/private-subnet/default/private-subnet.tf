@@ -32,11 +32,12 @@ resource "aws_vpc" "default" {
 module "public_subnet" {
   source = "../../modules/public_subnet"
 
-  vpc_id       = aws_vpc.default.id
-  tags         = var.tags
-  prefix       = var.prefix
-  whitelist_ip = var.whitelist_ip
-  subnet_cidr  = var.num_pvt_subnets == 1 ? var.public_subnet_cidr : cidrsubnet(var.cidr_block, local.newbits, 0)
+  vpc_id            = aws_vpc.default.id
+  tags              = var.tags
+  prefix            = var.prefix
+  whitelist_ip      = var.whitelist_ip
+  subnet_cidr       = var.num_pvt_subnets == 1 ? var.public_subnet_cidr : cidrsubnet(var.cidr_block, local.newbits, 0)
+  use_network_acls  = var.use_network_acls
 }
 
 module "bastion_node" {
@@ -58,9 +59,10 @@ module "private_subnet" {
   vpc_id             = aws_vpc.default.id
   tags               = var.tags
   prefix             = var.prefix
-  whitelist_outgoing = "0.0.0.0/0"
   subnet_cidr        = var.num_pvt_subnets == 1 ? var.private_subnet_cidr : ""
   num_pvt_subnets    = var.num_pvt_subnets
+  use_network_acls   = var.use_network_acls
+  whitelist_outgoing = "0.0.0.0/0"
 }
 
 # Create S3 endpoint

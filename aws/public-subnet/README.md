@@ -11,8 +11,9 @@ This template creates a VPC for use with Qubole clusters in a public subnet base
 | prefix | Prefix to be used for 'name' tags. e.g. the vpc would be named _prefix_-vpc | string | n/a | yes |
 | public\_subnet\_cidr | CIDR block for the subnet. Auto-calculated if not specified. Ignored when using multiple subnets | string | `""` | no |
 | region | AWS region to create the resources in | string | `"us-west-2"` | no |
-| tags | Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources. | map | `<map>` | no |
-| whitelist\_ip | List of IPs to whitelist SSH from | list | n/a | yes |
+| tags | Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources. | map(string) | `<map>` | no |
+| use\_network\_acls | Whether to use network ACLs in addition to security groups for access control | bool | `"false"` | no |
+| whitelist\_ip | List of IPs to whitelist SSH from | list(string) | n/a | yes |
 
 ## Outputs
 

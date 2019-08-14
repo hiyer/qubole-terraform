@@ -18,8 +18,9 @@ NB: this is a sample configuration that does not work with Qubole yet. Please ge
 | public\_subnet\_cidr | CIDR for the public subnet. Auto-calculated if not specified. Ignored when using multiple subnets. | string | `""` | no |
 | region | AWS region | string | `"us-west-2"` | no |
 | ssh\_public\_key | Public key to use for bastion node. This is the account key in cluster UI | string | n/a | yes |
-| tags | Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources. | map | `<map>` | no |
-| whitelist\_ip | List of IPs to whitelist SSH from | list | n/a | yes |
+| tags | Other tags to apply. It is *highly recommended* to specify tags so you can identify your resources. | map(string) | `<map>` | no |
+| use\_network\_acls | Whether to use network ACLs in addition to security groups for access control | bool | `"false"` | no |
+| whitelist\_ip | List of IPs to whitelist SSH from | list(string) | n/a | yes |
 | whitelist\_outgoing | Public IP to whitelist outgoing traffic to. If not specified, no outgoing traffic is allowed from the private subnet except to s3 and ec2 via the respective vpc endpoints. | string | `""` | no |
 
 ## Outputs

@@ -10,7 +10,7 @@ module "iam" {
   account_id  = var.account_id
   s3location  = var.s3location
   name_prefix = var.role_name
-  vpc_ids      = var.vpc_ids
+  vpc_ids     = var.vpc_ids
 }
 
 resource "aws_iam_role_policy_attachment" "access_policy" {

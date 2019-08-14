@@ -30,7 +30,7 @@ variable "num_subnets" {
 }
 
 variable "use_network_acls" {
-  type = bool
+  type        = bool
   description = "Whether to use Network ACLs in addition to security groups for access control"
 }
 

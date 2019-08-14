@@ -32,12 +32,12 @@ locals {
 module "public_subnet" {
   source = "../../modules/public_subnet"
 
-  vpc_id            = aws_vpc.default.id
-  tags              = var.tags
-  prefix            = var.prefix
-  whitelist_ip      = var.whitelist_ip
-  subnet_cidr       = var.num_pvt_subnets == 1 && var.public_subnet_cidr != "" ? var.public_subnet_cidr : cidrsubnet(var.cidr_block, local.newbits, 0)
-  use_network_acls  = var.use_network_acls
+  vpc_id           = aws_vpc.default.id
+  tags             = var.tags
+  prefix           = var.prefix
+  whitelist_ip     = var.whitelist_ip
+  subnet_cidr      = var.num_pvt_subnets == 1 && var.public_subnet_cidr != "" ? var.public_subnet_cidr : cidrsubnet(var.cidr_block, local.newbits, 0)
+  use_network_acls = var.use_network_acls
 }
 
 module "bastion_node" {

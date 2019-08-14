@@ -1,12 +1,12 @@
 
 # Configure the Azure Provider
-provider "azurerm" { }
+provider "azurerm" {}
 
 # Create a resource group
 resource "azurerm_resource_group" "network" {
   name     = "${var.prefix}_resource_group"
   location = "${var.region}"
-  tags = "${var.tags}"
+  tags     = "${var.tags}"
 }
 
 # Create a virtual network within the resource group
@@ -15,7 +15,7 @@ resource "azurerm_virtual_network" "network" {
   address_space       = ["${var.vnet_cidr}"]
   location            = "${azurerm_resource_group.network.location}"
   resource_group_name = "${azurerm_resource_group.network.name}"
-  tags = "${var.tags}"
+  tags                = "${var.tags}"
 
   subnet {
     name           = "${var.prefix}-subnet1"
@@ -24,29 +24,29 @@ resource "azurerm_virtual_network" "network" {
 }
 
 resource "azurerm_subnet" "subnet" {
-  name           = "${var.prefix}-subnet1"
-  address_prefix = "${var.subnet_cidr}"
-  resource_group_name = "${azurerm_resource_group.network.name}"
+  name                 = "${var.prefix}-subnet1"
+  address_prefix       = "${var.subnet_cidr}"
+  resource_group_name  = "${azurerm_resource_group.network.name}"
   virtual_network_name = "${azurerm_virtual_network.network.name}"
 }
 
 
 # Create a storage account
 resource "azurerm_storage_account" "storage" {
-  name = "${var.prefix}storage"
-  location            = "${azurerm_resource_group.network.location}"
-  resource_group_name = "${azurerm_resource_group.network.name}"
-  account_replication_type = "ZRS"
+  name                      = "${var.prefix}storage"
+  location                  = "${azurerm_resource_group.network.location}"
+  resource_group_name       = "${azurerm_resource_group.network.name}"
+  account_replication_type  = "ZRS"
   enable_https_traffic_only = false
-  account_tier = "Standard"
-  access_tier = "hot"
-  tags = "${var.tags}"
+  account_tier              = "Standard"
+  access_tier               = "hot"
+  tags                      = "${var.tags}"
 }
 
 # Create a storage container
 resource "azurerm_storage_container" "container" {
-  name = "${var.prefix}-container"
-  resource_group_name = "${azurerm_resource_group.network.name}"
-  storage_account_name = "${azurerm_storage_account.storage.name}"
+  name                  = "${var.prefix}-container"
+  resource_group_name   = "${azurerm_resource_group.network.name}"
+  storage_account_name  = "${azurerm_storage_account.storage.name}"
   container_access_type = "private"
 }

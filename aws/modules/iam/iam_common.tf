@@ -37,10 +37,10 @@ data "aws_iam_policy_document" "common_ec2_policy" {
     condition {
       test     = "StringEquals"
       variable = "ec2:vpc"
-      values   = [
-                  for vpc in var.vpc_ids:
-                  "arn:aws:ec2:${var.region}:${vpc.account_id}:vpc/${vpc.vpc_id}"
-                 ]
+      values = [
+        for vpc in var.vpc_ids :
+        "arn:aws:ec2:${var.region}:${vpc.account_id}:vpc/${vpc.vpc_id}"
+      ]
 
     }
   }
@@ -78,10 +78,10 @@ data "aws_iam_policy_document" "common_ec2_policy" {
     condition {
       test     = "StringEquals"
       variable = "ec2:vpc"
-      values   = [
-                  for vpc in var.vpc_ids:
-                  "arn:aws:ec2:${var.region}:${vpc.account_id}:vpc/${vpc.vpc_id}"
-                 ]
+      values = [
+        for vpc in var.vpc_ids :
+        "arn:aws:ec2:${var.region}:${vpc.account_id}:vpc/${vpc.vpc_id}"
+      ]
     }
   }
 

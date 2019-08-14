@@ -7,7 +7,7 @@ locals {
 }
 
 resource "aws_network_acl" "default" {
-  count = local.num_network_acls
+  count      = local.num_network_acls
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
@@ -86,7 +86,7 @@ resource "aws_network_acl_rule" "https_in" {
 
 # Outgoing traffic within VPC
 resource "aws_network_acl_rule" "vpc_out" {
-  count = local.num_network_acls
+  count          = local.num_network_acls
   network_acl_id = aws_network_acl.default[0].id
   protocol       = "tcp"
   rule_number    = 401
@@ -99,7 +99,7 @@ resource "aws_network_acl_rule" "vpc_out" {
 
 # Incoming traffic within VPC
 resource "aws_network_acl_rule" "vpc_in" {
-  count = local.num_network_acls
+  count          = local.num_network_acls
   network_acl_id = aws_network_acl.default[0].id
   protocol       = "tcp"
   rule_number    = 401

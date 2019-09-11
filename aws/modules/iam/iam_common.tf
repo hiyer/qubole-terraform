@@ -17,6 +17,9 @@ data "aws_iam_policy_document" "common_ec2_policy" {
       "ec2:CreateSecurityGroup",
       "ec2:CreateTags",
       "sts:DecodeAuthorizationMessage",
+      "ec2:DeleteLaunchTemplate",
+      "ec2:CreateLaunchTemplate",
+      "ec2:DescribeLaunchTemplates"
     ]
     resources = [
       "*",

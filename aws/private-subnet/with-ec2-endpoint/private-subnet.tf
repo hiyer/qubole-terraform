@@ -51,6 +51,7 @@ module "bastion_node" {
   ssh_public_key   = var.ssh_public_key
   vpc_id           = aws_vpc.default.id
   instance_type    = var.bastion_node_instance_type
+  region           = var.region
 }
 
 module "private_subnet" {

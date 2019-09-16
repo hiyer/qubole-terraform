@@ -64,6 +64,11 @@ output "bastion_ip" {
   description = "IP address of the bastion node"
 }
 
+output "bastion_id" {
+  value       = module.bastion_node.instance_id
+  description = "Instance Id of the bastion node"
+}
+
 output "vpc_id" {
   value       = aws_vpc.default.id
   description = "VPC Id"

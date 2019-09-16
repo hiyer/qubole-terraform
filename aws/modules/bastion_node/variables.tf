@@ -39,3 +39,8 @@ variable "instance_type" {
   default     = "t3.small"
 }
 
+variable "region" {
+  type        = "string"
+  description = "AWS region"
+}
+

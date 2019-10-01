@@ -2,7 +2,7 @@ data "aws_ami" "amzn_linux" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["amzn-ami-hvm-*-x86_64-gp2"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
   filter {
     name   = "virtualization-type"
@@ -95,6 +95,6 @@ EOF
 # Enable EIP for the Bastion Host
 resource "aws_eip" "bastion_node" {
   instance = aws_instance.bastion_node.id
-  vpc = true
+  vpc      = true
 }
 

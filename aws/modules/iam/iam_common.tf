@@ -172,15 +172,15 @@ resource "aws_iam_role_policy_attachment" "name" {
   policy_arn = aws_iam_policy.spot_fleet_service_role.arn
 }
 
-# resource "aws_iam_service_linked_role" "spot" {
-#   aws_service_name = "spot.amazonaws.com"
-#   description      = "Allows EC2 Spot to launch and manage spot instances."
-# }
-#
-# resource "aws_iam_service_linked_role" "spotfleet" {
-#   aws_service_name = "spotfleet.amazonaws.com"
-#   description      = "Default EC2 Spot Fleet Service Linked Role"
-# }
+resource "aws_iam_service_linked_role" "spot" {
+  aws_service_name = "spot.amazonaws.com"
+  description      = "Allows EC2 Spot to launch and manage spot instances."
+}
+
+resource "aws_iam_service_linked_role" "spotfleet" {
+  aws_service_name = "spotfleet.amazonaws.com"
+  description      = "Default EC2 Spot Fleet Service Linked Role"
+}
 
 resource "aws_iam_policy" "common_ec2_policy" {
   name   = "${var.name_prefix}-access-policy"
@@ -202,6 +202,7 @@ data "aws_iam_policy_document" "s3_policy" {
     ]
     resources = [
       "arn:aws:s3:::${var.s3location}/*",
+      "arn:aws:s3:::${var.s3location}/",
       "arn:aws:s3:::${var.s3location}",
     ]
   }
